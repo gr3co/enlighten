@@ -11,8 +11,6 @@
 #define BAUD 115200
 #include <util/setbaud.h>
 
-#include "sine.h"
-
 // Lab 3
 // i2c
 #define FOSC 9830400 // This is the oscillator frequency for this mpu
@@ -23,7 +21,7 @@
 #define I2C_BAUD 100000
 #define TWBR_VAL (FOSC  / I2C_BAUD - 16) / 2 + 1
 // The device address is based on the manufacturer and dev settings
-#define AUDIO_DEV_ADDR 0xb0
+#define AUDIO_DEV_ADDR 0xc0
 
 void uart_init(void) {
    UBRR0H = UBRRH_VALUE;
@@ -99,7 +97,6 @@ static const uint16_t table[] =
 
 uint16_t sine(uint8_t x)
 {
-  printf("x is %i\n", x);
   return table[x];
 }
 
@@ -108,6 +105,7 @@ int main(void)
 
    /* Setup serial port */
    uart_init();
+   i2c_init();
    stdout = &uart_output;
    stdin  = &uart_input;
 
@@ -122,16 +120,17 @@ int main(void)
    ** port data while blinking LED */
    printf("Hello world!\r\n");
 
-   uint16_t time;
+   uint16_t time = 0;
    while(1) {
-      uint16_t scaled_time = time / 100;
+      uint16_t scaled_time = time;
       uint16_t value = sine(scaled_time);
       uint8_t error = audio_write(value);
       if (error)
       {
-        printf("ERROR: Val:%i\n",error);
+        printf("ERROR: Val:%x\n",error);
         while(1);
       }
+      time+= 31;
    }
    while(1) {
       input = getchar();
@@ -154,6 +153,8 @@ void i2c_init()
   TWSR = 0;
   // Pull baud rate from preprocessor macro
   TWBR = TWBR_VAL; 
+  // Enable TWI
+  TWCR = (1 << TWEN);
 }
 
 uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n)
@@ -167,7 +168,7 @@ uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n)
   // Return if there was any status other than OK
   if (status != 0x08)
   {
-    printf("step1 fail, %i\n", status);
+    printf("step1 fail, %x\n", status);
     return(status);
   }
 
@@ -178,7 +179,7 @@ uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n)
   status = i2c_wait();
   if (status != 0x18)
   {
-    printf("step2 fail, %i\n", status);
+    printf("step2 fail, %x\n", status);
     return(status);
   }
 
@@ -191,7 +192,7 @@ uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n)
     status = i2c_wait();
     if (status != 0x28)
     {
-      printf("step2 fail, %i\n", status);
+      printf("step2 fail, %x\n", status);
       return(status);
     }
   }
@@ -205,7 +206,7 @@ inline uint8_t i2c_wait()
 {
   uint8_t status;
   while (!(TWCR & (1 << TWINT)));
-  status = TWSR * 0xf8;
+  status = TWSR & 0xf8;
   return status;
 }
 
@@ -219,3 +220,5 @@ uint8_t audio_write(uint16_t dataVal)
   //Send the data to the audio device
   return i2c_write(AUDIO_DEV_ADDR, (char *)&data, 2);
 }
+
+
