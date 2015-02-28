@@ -50,7 +50,10 @@ FILE uart_input = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
 FILE uart_io = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
 
 // Lab 3 stuff
+// i2c functionality
 void i2c_init();
+uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n);
+uint8_t i2c_wait();
 
 int main(void)
 {
@@ -91,4 +94,50 @@ void i2c_init()
   TWBR = TWBR_VAL; 
 }
 
+uint8_t i2c_write(uint8_t dev_addr, char *p, uint8_t n)
+{
+  uint8_t status;
+  
+  // Set the control register to set a start condition on the bus
+  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTA);
+  // Wait for TWINT to get set
+  status = i2c_wait();
+  // Return if there was any status other than OK
+  if (status != 0x08)
+  {
+    return(status);
+  }
 
+  // Now set the device address
+  TWDR = dev_addr & 0xfe; // set r/w to 0
+  TWCR = (1 << TWINT) | (1 << TWEN);
+  status = i2c_wait();
+  if (status != 0x18)
+  {
+    return(status);
+  }
+
+  // Now we need to actually write the data
+  while (n-- > 0)
+  {
+    TWDR = *p++;
+    TWCR = (1 << TWINT) | (1 << TWEN);
+    status = i2c_wait();
+    if (status != 0x28)
+    {
+      return(status);
+    }
+  }
+
+  // Send the stop condition
+  TWCR = (1 << TWINT) || (1 << TWEN) | (1 << TWSTO);
+  return 0;
+}
+
+inline uint8_t i2c_wait()
+{
+  uint8_t status;
+  while (!(TWCR & (1 << TWINT)));
+  status = TWSR * 0xf8;
+  return status;
+}
