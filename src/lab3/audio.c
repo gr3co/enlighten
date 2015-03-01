@@ -22,6 +22,7 @@
 #define TWBR_VAL (FOSC  / I2C_BAUD - 16) / 2 + 1
 // The device address is based on the manufacturer and dev settings
 #define AUDIO_DEV_ADDR 0xc0
+#define MEAN 300
 
 void uart_init(void) {
    UBRR0H = UBRRH_VALUE;
@@ -59,6 +60,13 @@ uint8_t i2c_wait();
 
 // audio functionality
 uint8_t audio_write(uint16_t dataVal);
+
+// ADC interfacing
+void adc_init();
+
+uint16_t adc_read(uint8_t adcx);
+
+uint16_t get_inc(uint16_t x, uint16_t y, uint16_t z);
 
 // Sin lookup table
 static const uint16_t table[] = 
@@ -102,10 +110,11 @@ uint16_t sine(uint8_t x)
 
 int main(void)
 {
-
    /* Setup serial port */
    uart_init();
    i2c_init();
+   adc_init();
+   audio_write(0);
    stdout = &uart_output;
    stdin  = &uart_input;
 
@@ -121,16 +130,22 @@ int main(void)
    printf("Hello world!\r\n");
 
    uint16_t time = 0;
+   uint16_t x, y, z;
    while(1) {
-      uint16_t scaled_time = time;
-      uint16_t value = sine(scaled_time);
+      uint16_t value = sine(time);
+      x = adc_read(0);
+      y = adc_read(1);
+      z = adc_read(2);
+      if (time % 512 == 0)
+        printf("x:%i y:%i z:%i\r\n", x, y, z);
       uint8_t error = audio_write(value);
       if (error)
       {
         printf("ERROR: Val:%x\n",error);
         while(1);
       }
-      time+= 31;
+      //time+= 31;
+      time += get_inc(x, y, z);
    }
    while(1) {
       input = getchar();
@@ -221,4 +236,47 @@ uint8_t audio_write(uint16_t dataVal)
   return i2c_write(AUDIO_DEV_ADDR, (char *)&data, 2);
 }
 
+//ADC functions
+void adc_init()
+{
+  ADMUX |= (1 << REFS0);
+  ADCSRA |= (1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0)|(1<<ADEN);
+}
+
+uint16_t adc_read(uint8_t adcx) {
+  //adcx is the analog pin we want to read from
+  ADMUX &= 0xf0;
+  ADMUX |= adcx;
+
+  ADCSRA |= _BV(ADSC);
+
+  while (ADCSRA & _BV(ADSC));
+  return ADC;
+}
+
+inline uint16_t absVal(uint16_t val)
+{
+  uint16_t av = MEAN - val > 1024 ? val - MEAN : MEAN - val;
+  return av;
+}
+
+uint16_t get_inc(uint16_t x, uint16_t y, uint16_t z)
+{
+  x = absVal(x);
+  y = absVal(y);
+  z = absVal(z);
+  if ((x >= y) && (x >= z))
+  {
+    return 30;
+  }
+  if ((y >= x) && (y >= z))
+  {
+    return 25;
+  }
+  if ((z >= x) && (z >= y))
+  {
+    return 41;
+  }
+  return 35;
+}
 
