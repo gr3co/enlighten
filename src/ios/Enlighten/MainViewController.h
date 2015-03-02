@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <opencv2/highgui/cap_ios.h>
 
-@interface MainViewController : UIViewController
+@interface MainViewController : UIViewController <CvVideoCameraDelegate>
 
+@property (nonatomic, retain) CvVideoCamera *videoCamera;
 
 @end
 
