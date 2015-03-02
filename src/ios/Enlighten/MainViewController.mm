@@ -1,5 +1,5 @@
 //
-//  MainViewController.m
+//  MainViewController.mm
 //  Enlighten
 //
 //  Created by Stephen Greco on 2/12/15.

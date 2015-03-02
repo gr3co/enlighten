@@ -12,6 +12,7 @@
 		A8AE261A1AA50032004E27A1 /* libPods-Enlighten-OpenCV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */; };
 		A8AE261C1AA50036004E27A1 /* libPods-Enlighten.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */; };
 		A8AE26201AA50354004E27A1 /* MainViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8AE261F1AA50354004E27A1 /* MainViewController.mm */; };
+		A8AE26251AA506A1004E27A1 /* OpenCVUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */; };
 		A8AF7B311A8D6D48008DF892 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B301A8D6D48008DF892 /* main.m */; };
 		A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B331A8D6D48008DF892 /* AppDelegate.m */; };
 		A8AF7B3C1A8D6D48008DF892 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */; };
@@ -27,6 +28,8 @@
 		A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Enlighten-OpenCV.a"; path = "Pods/build/Debug-iphoneos/libPods-Enlighten-OpenCV.a"; sourceTree = "<group>"; };
 		A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Enlighten.a"; path = "Pods/build/Debug-iphoneos/libPods-Enlighten.a"; sourceTree = "<group>"; };
 		A8AE261F1AA50354004E27A1 /* MainViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainViewController.mm; sourceTree = "<group>"; };
+		A8AE26211AA505CD004E27A1 /* OpenCVUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenCVUtils.h; sourceTree = "<group>"; };
+		A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVUtils.mm; sourceTree = "<group>"; };
 		A8AF7B2B1A8D6D48008DF892 /* Enlighten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Enlighten.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8AF7B2F1A8D6D48008DF892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A8AF7B301A8D6D48008DF892 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -99,6 +102,8 @@
 				A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */,
 				A8AF7B351A8D6D48008DF892 /* MainViewController.h */,
 				A8AE261F1AA50354004E27A1 /* MainViewController.mm */,
+				A8AE26211AA505CD004E27A1 /* OpenCVUtils.h */,
+				A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */,
 				A8AF7B2E1A8D6D48008DF892 /* Supporting Files */,
 			);
 			path = Enlighten;
@@ -218,6 +223,7 @@
 			files = (
 				A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */,
 				A8AE26201AA50354004E27A1 /* MainViewController.mm in Sources */,
+				A8AE26251AA506A1004E27A1 /* OpenCVUtils.mm in Sources */,
 				A8AF7B311A8D6D48008DF892 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
