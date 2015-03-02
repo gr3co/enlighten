@@ -4,6 +4,8 @@
 # Define all Cocoapod dependencies here
 
 target 'Enlighten' do
+    
+    pod 'OpenCV', '2.4.9'
 
 end
 

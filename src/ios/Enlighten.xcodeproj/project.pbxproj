@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A8AE26131AA4FCC0004E27A1 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26121AA4FCC0004E27A1 /* libc++.dylib */; };
+		A8AE26181AA4FFA7004E27A1 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26171AA4FFA7004E27A1 /* libstdc++.dylib */; };
+		A8AE261A1AA50032004E27A1 /* libPods-Enlighten-OpenCV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */; };
+		A8AE261C1AA50036004E27A1 /* libPods-Enlighten.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */; };
 		A8AF7B311A8D6D48008DF892 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B301A8D6D48008DF892 /* main.m */; };
 		A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B331A8D6D48008DF892 /* AppDelegate.m */; };
 		A8AF7B371A8D6D48008DF892 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B361A8D6D48008DF892 /* MainViewController.m */; };
@@ -14,6 +18,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		067F7D2B6BEA7FF05781CC7A /* Pods-Enlighten.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Enlighten.release.xcconfig"; path = "Pods/Target Support Files/Pods-Enlighten/Pods-Enlighten.release.xcconfig"; sourceTree = "<group>"; };
+		6BD9C4092C69E58849F52E95 /* libPods-Enlighten.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Enlighten.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		92AF7D3FA5AF1825DB1D2394 /* Pods-Enlighten.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Enlighten.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Enlighten/Pods-Enlighten.debug.xcconfig"; sourceTree = "<group>"; };
+		A8AE26101AA4FCB5004E27A1 /* libPods-Enlighten-OpenCV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Enlighten-OpenCV.a"; path = "Pods/build/Debug-iphoneos/libPods-Enlighten-OpenCV.a"; sourceTree = "<group>"; };
+		A8AE26121AA4FCC0004E27A1 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		A8AE26171AA4FFA7004E27A1 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Enlighten-OpenCV.a"; path = "Pods/build/Debug-iphoneos/libPods-Enlighten-OpenCV.a"; sourceTree = "<group>"; };
+		A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Enlighten.a"; path = "Pods/build/Debug-iphoneos/libPods-Enlighten.a"; sourceTree = "<group>"; };
 		A8AF7B2B1A8D6D48008DF892 /* Enlighten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Enlighten.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8AF7B2F1A8D6D48008DF892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A8AF7B301A8D6D48008DF892 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -29,17 +41,45 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8AE261C1AA50036004E27A1 /* libPods-Enlighten.a in Frameworks */,
+				A8AE261A1AA50032004E27A1 /* libPods-Enlighten-OpenCV.a in Frameworks */,
+				A8AE26181AA4FFA7004E27A1 /* libstdc++.dylib in Frameworks */,
+				A8AE26131AA4FCC0004E27A1 /* libc++.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5CC4B8FC0BAD5DA964AE28D5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				92AF7D3FA5AF1825DB1D2394 /* Pods-Enlighten.debug.xcconfig */,
+				067F7D2B6BEA7FF05781CC7A /* Pods-Enlighten.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		952A854EC6C3269147DF3D30 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */,
+				A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */,
+				A8AE26171AA4FFA7004E27A1 /* libstdc++.dylib */,
+				A8AE26121AA4FCC0004E27A1 /* libc++.dylib */,
+				A8AE26101AA4FCB5004E27A1 /* libPods-Enlighten-OpenCV.a */,
+				6BD9C4092C69E58849F52E95 /* libPods-Enlighten.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A8AF7B221A8D6D48008DF892 = {
 			isa = PBXGroup;
 			children = (
 				A8AF7B2D1A8D6D48008DF892 /* Enlighten */,
 				A8AF7B2C1A8D6D48008DF892 /* Products */,
+				5CC4B8FC0BAD5DA964AE28D5 /* Pods */,
+				952A854EC6C3269147DF3D30 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,9 +120,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A8AF7B4E1A8D6D49008DF892 /* Build configuration list for PBXNativeTarget "Enlighten" */;
 			buildPhases = (
+				4F3CB77999065A9575ADCE40 /* Check Pods Manifest.lock */,
 				A8AF7B271A8D6D48008DF892 /* Sources */,
 				A8AF7B281A8D6D48008DF892 /* Frameworks */,
 				A8AF7B291A8D6D48008DF892 /* Resources */,
+				9BCD792FEA51C45B82D2B98C /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -135,6 +177,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4F3CB77999065A9575ADCE40 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		9BCD792FEA51C45B82D2B98C /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Enlighten/Pods-Enlighten-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A8AF7B271A8D6D48008DF892 /* Sources */ = {
@@ -228,20 +303,34 @@
 		};
 		A8AF7B4F1A8D6D49008DF892 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92AF7D3FA5AF1825DB1D2394 /* Pods-Enlighten.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Enlighten/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		A8AF7B501A8D6D49008DF892 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 067F7D2B6BEA7FF05781CC7A /* Pods-Enlighten.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Enlighten/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
