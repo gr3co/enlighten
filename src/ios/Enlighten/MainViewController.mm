@@ -6,12 +6,8 @@
 //  Copyright (c) 2015 18-549 Team10. All rights reserved.
 //
 
-@import AVFoundation;
+#import <AVFoundation/AVFoundation.h>
 #import "MainViewController.h"
-
-@interface MainViewController ()
-
-@end
 
 @implementation MainViewController
 
