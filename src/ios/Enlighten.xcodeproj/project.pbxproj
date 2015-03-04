@@ -151,6 +151,7 @@
 				TargetAttributes = {
 					A8AF7B2A1A8D6D48008DF892 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = 3MGN9YP3AM;
 					};
 				};
 			};
@@ -312,6 +313,8 @@
 			baseConfigurationReference = 92AF7D3FA5AF1825DB1D2394 /* Pods-Enlighten.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Enlighten/Info.plist;
@@ -321,6 +324,7 @@
 					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -329,6 +333,8 @@
 			baseConfigurationReference = 067F7D2B6BEA7FF05781CC7A /* Pods-Enlighten.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Enlighten/Info.plist;
@@ -338,6 +344,7 @@
 					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
