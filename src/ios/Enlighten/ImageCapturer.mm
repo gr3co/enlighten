@@ -21,6 +21,10 @@
     [super captureStillImageAsynchronouslyFromConnection:[self connectionWithMediaType:AVMediaTypeVideo]
                                        completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
                                            
+                                           
+                                           // FYI, some of this code came directly from
+                                           // http://stackoverflow.com/questions/12355257/open-cv-ios-video-processing
+                                           
                                            CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(imageDataSampleBuffer);
                                            
                                            CVPixelBufferLockBaseAddress( pixelBuffer, 0 );

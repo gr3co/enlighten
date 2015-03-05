@@ -37,6 +37,7 @@ using namespace cv;
         }
     }
     
+    // If we can't find a back camera, then there isn't a camera.
     if (backCamera == nil) {
         [[[UIAlertView alloc] initWithTitle:@"No camera"
                                     message:@"This device does not have a back camera."
@@ -44,6 +45,8 @@ using namespace cv;
                           cancelButtonTitle:@"OK"
                           otherButtonTitles:nil]show];
     } else {
+        
+        // Tell the capture session that we want to use the back camera
         NSError *error;
         AVCaptureDeviceInput *backCameraInput = [[AVCaptureDeviceInput alloc] initWithDevice:backCamera error:&error];
         [_captureSession addInput:backCameraInput];
@@ -52,14 +55,18 @@ using namespace cv;
             NSLog(@"%@", [error localizedDescription]);
         }
         
+        // Start running the capture session (this means that it is ready to capture images/video)
         [_captureSession startRunning];
         
+        // Create an instance of ImageCapturer to, well, capture our images
         _capturer = [[ImageCapturer alloc] initWithCaptureSession:_captureSession];
         
     }
     
     _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
-    [_button setTitle:@"Click to start" forState:UIControlStateNormal];
+    [_button setTitle:@"Capture Image" forState:UIControlStateNormal];
+    
+    // Whenever the button is pressed, we want to call the captureImage method defined below
     [_button addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
     [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
     [self.view addSubview:_button];
@@ -74,10 +81,13 @@ using namespace cv;
 
 - (void)captureImage {
     [_capturer captureOpenCvImageAsynchronouslyWithCompletion:^(cv::Mat& cvImage, NSError *error) {
-        if (error) {
+        if (error != nil) {
             NSLog(@"%@", [error localizedDescription]);
+        } else {
+            // Print out the Mat... although every time I run
+            // this it's empty so I think something might be wrong??
+            std::cout << cvImage  << std::endl;
         }
-        std::cout << cvImage  << std::endl;
     }];
 }
 
