@@ -9,6 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "MainViewController.h"
 #import "OpenCVUtils.h"
+#import "ImageCapturer.h"
 
 using namespace cv;
 
@@ -17,13 +18,11 @@ using namespace cv;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
-    [_button setTitle:@"Click to start" forState:UIControlStateNormal];
-    [_button addTarget:self action:@selector(toggleSession) forControlEvents:UIControlEventTouchUpInside];
-    [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
-    [self.view addSubview:_button];
+    // The same color as the launch image background
+    self.view.backgroundColor = [UIColor colorWithRed:0xf7/255.0
+                                                green:0xf4/255.0
+                                                 blue:7/255.0
+                                                alpha:1.0];
     
     // Set up the capture session to the default settings for 720p
     _captureSession = [[AVCaptureSession alloc] init];
@@ -53,10 +52,17 @@ using namespace cv;
             NSLog(@"%@", [error localizedDescription]);
         }
         
-        AVCaptureVideoPreviewLayer *previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_captureSession];
-        previewLayer.frame = self.view.layer.frame;
-        [self.view.layer addSublayer:previewLayer];
+        [_captureSession startRunning];
+        
+        _capturer = [[ImageCapturer alloc] initWithCaptureSession:_captureSession];
+        
     }
+    
+    _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
+    [_button setTitle:@"Click to start" forState:UIControlStateNormal];
+    [_button addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
+    [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
+    [self.view addSubview:_button];
     
 
 }
@@ -66,14 +72,13 @@ using namespace cv;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)toggleSession {
-    if ([_captureSession isRunning]) {
-        [_captureSession stopRunning];
-        [_button setTitle:@"Click to start" forState:UIControlStateNormal];
-    } else {
-        [_captureSession startRunning];
-        [_button setTitle:@"Click to stop" forState:UIControlStateNormal];
-    }
+- (void)captureImage {
+    [_capturer captureOpenCvImageAsynchronouslyWithCompletion:^(cv::Mat& cvImage, NSError *error) {
+        if (error) {
+            NSLog(@"%@", [error localizedDescription]);
+        }
+        std::cout << cvImage  << std::endl;
+    }];
 }
 
 @end

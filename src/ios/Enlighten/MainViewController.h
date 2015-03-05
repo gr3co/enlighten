@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "ImageCapturer.h"
 
 @interface MainViewController : UIViewController
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 
 @property UIButton *button;
+@property ImageCapturer *capturer;
 
 @end
 
