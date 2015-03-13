@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 #ifdef __cplusplus
 #import <opencv2/opencv.hpp>

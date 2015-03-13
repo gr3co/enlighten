@@ -16,6 +16,7 @@
 
 @property UIButton *button;
 @property ImageCapturer *capturer;
+@property UIImageView *imageView;
 
 @end
 

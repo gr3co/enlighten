@@ -7,6 +7,7 @@
 //
 
 #import "ImageCapturer.h"
+using namespace cv;
 
 @implementation ImageCapturer
 
@@ -17,28 +18,19 @@
     return self;
 }
 
-- (void) captureOpenCvImageAsynchronouslyWithCompletion:(void (^)(cv::Mat &, NSError*)) block {
+- (void) captureOpenCvImageAsynchronouslyWithCompletion:(void (^)(Mat &, NSError*)) block {
     [super captureStillImageAsynchronouslyFromConnection:[self connectionWithMediaType:AVMediaTypeVideo]
                                        completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
                                            
+                                           // Set a timer for the data->Mat conversion
+                                           NSDate *methodStart = [NSDate date];
                                            
-                                           // FYI, some of this code came directly from
-                                           // http://stackoverflow.com/questions/12355257/open-cv-ios-video-processing
+                                           NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
+                                           Mat image = imdecode(Mat(1, (int)[imageData length], CV_8UC1, (void*)imageData.bytes), 0);
                                            
-                                           CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(imageDataSampleBuffer);
-                                           
-                                           CVPixelBufferLockBaseAddress( pixelBuffer, 0 );
-                                           
-                                           int bufferWidth = (int)CVPixelBufferGetWidth(pixelBuffer);
-                                           int bufferHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
-                                           
-                                           unsigned char *pixel = (unsigned char *)CVPixelBufferGetBaseAddress(pixelBuffer);
-                                           
-                                           // Just point the original buffer to the OpenCV Mat
-                                           cv::Mat temp = cv::Mat(bufferHeight, bufferWidth, CV_8UC4, pixel);
-                                           // But we don't own that, so we should make our own copy of the Mat
-                                           cv::Mat image = temp.clone();
-                                           CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
+                                           NSDate *methodEnd = [NSDate date];
+                                           NSTimeInterval executionTime = [methodEnd timeIntervalSinceDate:methodStart];
+                                           NSLog(@"captureTime = %.1fms", executionTime * 1000.0);
                                            
                                            return block(image, error);
                                            

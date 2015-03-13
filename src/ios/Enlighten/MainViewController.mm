@@ -24,6 +24,16 @@ using namespace cv;
                                                  blue:7/255.0
                                                 alpha:1.0];
     
+    _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
+    [_button setTitle:@"Capture Image" forState:UIControlStateNormal];
+    [_button setTitle: @"Capture Unavailable" forState:UIControlStateDisabled];
+    
+    // Whenever the button is pressed, we want to call the captureImage method defined below
+    [_button addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
+    [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
+    [self.view addSubview:_button];
+    
+    
     // Set up the capture session to the default settings for 720p
     _captureSession = [[AVCaptureSession alloc] init];
     _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
@@ -44,6 +54,7 @@ using namespace cv;
                                    delegate:nil
                           cancelButtonTitle:@"OK"
                           otherButtonTitles:nil]show];
+        [_button setEnabled: NO];
     } else {
         
         // Tell the capture session that we want to use the back camera
@@ -63,13 +74,8 @@ using namespace cv;
         
     }
     
-    _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
-    [_button setTitle:@"Capture Image" forState:UIControlStateNormal];
-    
-    // Whenever the button is pressed, we want to call the captureImage method defined below
-    [_button addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
-    [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
-    [self.view addSubview:_button];
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 100, 300, 300)];
+    [self.view addSubview:_imageView];
     
 
 }
@@ -84,9 +90,8 @@ using namespace cv;
         if (error != nil) {
             NSLog(@"%@", [error localizedDescription]);
         } else {
-            // Print out the Mat... although every time I run
-            // this it's empty so I think something might be wrong??
-            std::cout << cvImage  << std::endl;
+            // Note- images are rotated 90deg when converted directly from a Mat to a UIImage
+            [_imageView setImage:[OpenCVUtils UIImageFromCvMat:cvImage]];
         }
     }];
 }
