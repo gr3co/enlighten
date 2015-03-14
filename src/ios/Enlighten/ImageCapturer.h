@@ -11,12 +11,27 @@
 
 #ifdef __cplusplus
 #import <opencv2/opencv.hpp>
+#include <vector>
 #endif
 
-@interface ImageCapturer : AVCaptureStillImageOutput
+@protocol ImageCapturerDelegate <NSObject>
+
+@required
+- (void) imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&) frames;
+
+@end
+
+
+@interface ImageCapturer : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 - (id) initWithCaptureSession:(AVCaptureSession*) session;
 
-- (void) captureOpenCvImageAsynchronouslyWithCompletion:(void (^)(cv::Mat &, NSError*)) block;
+- (void) captureFrames;
+
+@property AVCaptureSession *session;
+@property AVCaptureVideoDataOutput *output;
+@property std::vector<cv::Mat> currentFrames;
+
+@property id<ImageCapturerDelegate> delegate;
 
 @end

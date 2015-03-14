@@ -7,34 +7,81 @@
 //
 
 #import "ImageCapturer.h"
+
+// The number of frames we want to capture per session
+#define FRAME_COUNT 60
+
 using namespace cv;
 
 @implementation ImageCapturer
 
 - (id) initWithCaptureSession:(AVCaptureSession *)session {
+    
     if (self = [super init]) {
-        [session addOutput:self];
+        _output = [[AVCaptureVideoDataOutput alloc] init];
+        
+        dispatch_queue_t videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+        [_output setSampleBufferDelegate:self queue:videoDataOutputQueue];
+        
+        [session addOutput:_output];
+        _session = session;
+        
     }
+    
     return self;
 }
 
-- (void) captureOpenCvImageAsynchronouslyWithCompletion:(void (^)(Mat &, NSError*)) block {
-    [super captureStillImageAsynchronouslyFromConnection:[self connectionWithMediaType:AVMediaTypeVideo]
-                                       completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
-                                           
-                                           // Set a timer for the data->Mat conversion
-                                           NSDate *methodStart = [NSDate date];
-                                           
-                                           NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-                                           Mat image = imdecode(Mat(1, (int)[imageData length], CV_8UC1, (void*)imageData.bytes), 0);
-                                           
-                                           NSDate *methodEnd = [NSDate date];
-                                           NSTimeInterval executionTime = [methodEnd timeIntervalSinceDate:methodStart];
-                                           NSLog(@"captureTime = %.1fms", executionTime * 1000.0);
-                                           
-                                           return block(image, error);
-                                           
-    }];
+
+// This delegate function is called every time a frame is received from the Capture Session
+- (void) captureOutput:(AVCaptureOutput *)captureOutput
+ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+        fromConnection:(AVCaptureConnection *)connection {
+    
+    if (_currentFrames.size() >= FRAME_COUNT) {
+        NSLog(@"stopping capture");
+        [_session stopRunning];
+        [_delegate imageCapturerDidCaptureFrames:_currentFrames];
+        return;
+    }
+    
+    
+    CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
+    
+    // lock the buffer
+    CVPixelBufferLockBaseAddress(imgBuf, 0);
+    
+    // get the address to the image data
+    void *imgBufAddr = CVPixelBufferGetBaseAddressOfPlane(imgBuf, 0);
+    
+    // get image properties
+    int w = (int)CVPixelBufferGetWidth(imgBuf);
+    int h = (int)CVPixelBufferGetHeight(imgBuf);
+    
+    // create the cv mat
+    Mat image = Mat(h, w, CV_8UC1);           // 8 bit unsigned chars for grayscale data
+    memcpy(image.data, imgBufAddr, w * h);    // the first plane contains the grayscale data
+    
+    // unlock again
+    CVPixelBufferUnlockBaseAddress(imgBuf, 0);
+    
+    _currentFrames.push_back(image);
+    
+    if (_currentFrames.size() % 5 == 0) {
+        NSLog(@"captured %d frames", (int)_currentFrames.size());
+    }
+    
+}
+
+// Start capturing frames then send to delegate
+- (void) captureFrames {
+    
+    if ([_session isRunning]) {
+        @throw @"Session already running.";
+    }
+    NSLog(@"starting capture");
+    _currentFrames = std::vector<Mat>();
+    [_session startRunning];
+    
 }
 
 @end

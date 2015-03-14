@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ImageCapturer.h"
 
-@interface MainViewController : UIViewController
+@interface MainViewController : UIViewController <ImageCapturerDelegate>
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 

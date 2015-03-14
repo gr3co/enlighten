@@ -10,10 +10,13 @@
 #import "MainViewController.h"
 #import "OpenCVUtils.h"
 #import "ImageCapturer.h"
+#include <vector>
 
 using namespace cv;
 
-@implementation MainViewController
+@implementation MainViewController {
+    NSDate *startTime;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,7 +32,7 @@ using namespace cv;
     [_button setTitle: @"Capture Unavailable" forState:UIControlStateDisabled];
     
     // Whenever the button is pressed, we want to call the captureImage method defined below
-    [_button addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
+    [_button addTarget:self action:@selector(captureImages) forControlEvents:UIControlEventTouchUpInside];
     [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
     [self.view addSubview:_button];
     
@@ -62,21 +65,42 @@ using namespace cv;
         AVCaptureDeviceInput *backCameraInput = [[AVCaptureDeviceInput alloc] initWithDevice:backCamera error:&error];
         [_captureSession addInput:backCameraInput];
         
+        // Reference: http://stackoverflow.com/questions/20330174/avcapture-capturing-and-getting-framebuffer-at-60-fps-in-ios-7
+        for (AVCaptureDeviceFormat *format in [backCamera formats] ) {
+            
+            CMFormatDescriptionRef description = format.formatDescription;
+            float maxrate = ((AVFrameRateRange*)[format.videoSupportedFrameRateRanges objectAtIndex:0]).maxFrameRate;
+            
+            if (maxrate >= 60 && CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                if ([backCamera lockForConfiguration:NULL]) {
+                    backCamera.activeFormat = format;
+                    
+                    // Set the camera to always use 60fps if available
+                    [backCamera setActiveVideoMinFrameDuration:CMTimeMake(1,60)];
+                    [backCamera setActiveVideoMaxFrameDuration:CMTimeMake(1,60)];
+                    
+                    // Always turn off torch mode & flash mode
+                    [backCamera setTorchMode:AVCaptureTorchModeOff];
+                    [backCamera setFlashMode:AVCaptureFlashModeOff];
+                    
+                    [backCamera unlockForConfiguration];
+                }
+            }
+        }
+        
+        
         if (error != nil) {
             NSLog(@"%@", [error localizedDescription]);
         }
         
-        // Start running the capture session (this means that it is ready to capture images/video)
-        [_captureSession startRunning];
-        
         // Create an instance of ImageCapturer to, well, capture our images
         _capturer = [[ImageCapturer alloc] initWithCaptureSession:_captureSession];
+        _capturer.delegate = self;
         
     }
-    
+        
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 100, 300, 300)];
     [self.view addSubview:_imageView];
-    
 
 }
 
@@ -85,15 +109,26 @@ using namespace cv;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)captureImage {
-    [_capturer captureOpenCvImageAsynchronouslyWithCompletion:^(cv::Mat& cvImage, NSError *error) {
-        if (error != nil) {
-            NSLog(@"%@", [error localizedDescription]);
-        } else {
-            // Note- images are rotated 90deg when converted directly from a Mat to a UIImage
-            [_imageView setImage:[OpenCVUtils UIImageFromCvMat:cvImage]];
-        }
-    }];
+- (void)captureImages {
+    startTime = [NSDate date];
+    [_capturer captureFrames];
+}
+
+- (void)imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&)frames {
+    
+    if (startTime != nil) {
+        // Just a simple sanity check
+        NSDate *endTime = [NSDate date];
+        NSTimeInterval elapsed = [endTime timeIntervalSinceDate:startTime];
+        NSLog(@"capture took %.2fms", elapsed * 1000.0);
+        startTime = nil;
+    }
+    
+    // Do something with the frames
+    
+    // For some reason this takes a really long time, I don't know why
+    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:frames.back()]];
+    
 }
 
 @end
