@@ -6,6 +6,7 @@
 target 'Enlighten' do
     
     pod 'OpenCV', '2.4.9.1'
+    pod 'MBProgressHUD', '~> 0.9.1'
 
 end
 

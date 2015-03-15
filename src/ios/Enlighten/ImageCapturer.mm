@@ -37,6 +37,8 @@ using namespace cv;
  didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         fromConnection:(AVCaptureConnection *)connection {
     
+    // Once we've collected 60 frames, stop recording and send the
+    // frames to the delegate in order to process them
     if (_currentFrames.size() >= FRAME_COUNT) {
         NSLog(@"stopping capture");
         [_session stopRunning];
@@ -44,7 +46,8 @@ using namespace cv;
         return;
     }
     
-    
+    // Below we're just generating an OpenCV Matrix from the raw
+    // pixel data given to us by the sampleBuffer
     CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
     
     // lock the buffer
@@ -58,14 +61,16 @@ using namespace cv;
     int h = (int)CVPixelBufferGetHeight(imgBuf);
     
     // create the cv mat
-    Mat image = Mat(h, w, CV_8UC1);           // 8 bit unsigned chars for grayscale data
-    memcpy(image.data, imgBufAddr, w * h);    // the first plane contains the grayscale data
+    Mat image = Mat(h, w, CV_8UC1);
+    memcpy(image.data, imgBufAddr, w * h);
     
     // unlock again
     CVPixelBufferUnlockBaseAddress(imgBuf, 0);
     
+    // Add the matrix to the current list of matrices
     _currentFrames.push_back(image);
     
+    // logging is always fun
     if (_currentFrames.size() % 5 == 0) {
         NSLog(@"captured %d frames", (int)_currentFrames.size());
     }
@@ -82,6 +87,11 @@ using namespace cv;
     _currentFrames = std::vector<Mat>();
     [_session startRunning];
     
+}
+
+- (void)didReceiveMemoryWarning {
+    // Reset current frames so maybe it'll get garbage collected
+    _currentFrames.clear();
 }
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <MBProgressHUD.h>
 #import "MainViewController.h"
 #import "OpenCVUtils.h"
 #import "ImageCapturer.h"
@@ -16,6 +17,7 @@ using namespace cv;
 
 @implementation MainViewController {
     NSDate *startTime;
+    BOOL isCapturing;
 }
 
 - (void)viewDidLoad {
@@ -99,35 +101,72 @@ using namespace cv;
         
     }
         
-    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 100, 300, 300)];
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 100, 300, 500)];
     [self.view addSubview:_imageView];
 
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)captureImages {
+    
+    if (isCapturing) {
+        return;
+    }
+    
+    isCapturing = YES;
     startTime = [NSDate date];
     [_capturer captureFrames];
+    // This is just that loading icon, so we have some sort of visual feedback
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 }
 
 - (void)imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&)frames {
     
+    /* 
+     * The lines below this simply append the matrices from the vector
+     * together so that we can run some sort of signal processing on them.
+     *
+     * The reason I'm doing combining the frames here and not as we capture
+     * them is that the frames come in asynchronously and we want to make
+     * sure they're in the correct order as much as we can.
+     *
+     * I'm not sure if the amount of time it takes to append the matrices
+     * together is longer than the processing time of a single frame, so we
+     * should wait until we have all of them in what we assume is the correct
+     * order before we combine them in order to run signal processing.
+     */
+    Mat total = Mat();
+    for (int i = 0; i < frames.size(); i++) {
+        total.push_back(frames[i]);
+    }
+    
+    // Fuck yeah memory management
+    frames.clear();
+    
+    // The time we are displaying below is from when we press the button
+    // to when the final matrix is created and ready for processing.
     if (startTime != nil) {
-        // Just a simple sanity check
         NSDate *endTime = [NSDate date];
         NSTimeInterval elapsed = [endTime timeIntervalSinceDate:startTime];
         NSLog(@"capture took %.2fms", elapsed * 1000.0);
         startTime = nil;
     }
     
-    // Do something with the frames
+    NSLog(@"combined size = %dx%d", total.size().height, total.size().width);
+    
     
     // For some reason this takes a really long time, I don't know why
-    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:frames.back()]];
+    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:total]];
+    
+    // Get rid of the loading icon when the image is displayed
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    isCapturing = NO;
+    
+    // And once again, fuck yeah memory management
+    ~total;
     
 }
 
