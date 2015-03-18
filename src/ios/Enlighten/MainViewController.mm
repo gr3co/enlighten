@@ -36,6 +36,7 @@ using namespace cv;
     // Whenever the button is pressed, we want to call the captureImage method defined below
     [_button addTarget:self action:@selector(captureImages) forControlEvents:UIControlEventTouchUpInside];
     [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
+    
     [self.view addSubview:_button];
     
     
@@ -73,7 +74,8 @@ using namespace cv;
             CMFormatDescriptionRef description = format.formatDescription;
             float maxrate = ((AVFrameRateRange*)[format.videoSupportedFrameRateRanges objectAtIndex:0]).maxFrameRate;
             
-            if (maxrate >= 60 && CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+            if (maxrate >= 60 &&
+                CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange){
                 if ([backCamera lockForConfiguration:NULL]) {
                     backCamera.activeFormat = format;
                     
@@ -85,7 +87,13 @@ using namespace cv;
                     [backCamera setTorchMode:AVCaptureTorchModeOff];
                     [backCamera setFlashMode:AVCaptureFlashModeOff];
                     
+                    // Adjust exposure to be as small as possible and ISO as big as possible
+                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,60)
+                                                              ISO:backCamera.activeFormat.maxISO
+                                                completionHandler:nil];
+                    
                     [backCamera unlockForConfiguration];
+                    
                 }
             }
         }
@@ -143,8 +151,16 @@ using namespace cv;
         total.push_back(frames[i]);
     }
     
+    // this can be changed to literally any iterable datatype
+    std::vector<float> avg;
+    
+    for (int i = 0; i < total.size().height; i++) {
+        avg.push_back(mean(total.row(i))[0]);
+    }
+    
     // Fuck yeah memory management
     frames.clear();
+    ~total;
     
     // The time we are displaying below is from when we press the button
     // to when the final matrix is created and ready for processing.
@@ -155,8 +171,7 @@ using namespace cv;
         startTime = nil;
     }
     
-    NSLog(@"combined size = %dx%d", total.size().height, total.size().width);
-    
+    NSLog(@"data size =%lu", avg.size());
     
     // For some reason this takes a really long time, I don't know why
     [_imageView setImage:[OpenCVUtils UIImageFromCvMat:total]];
@@ -164,9 +179,6 @@ using namespace cv;
     // Get rid of the loading icon when the image is displayed
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     isCapturing = NO;
-    
-    // And once again, fuck yeah memory management
-    ~total;
     
 }
 

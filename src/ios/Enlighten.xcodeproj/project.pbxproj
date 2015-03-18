@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BA8E60FD5DDCA07406AF9FF /* libPods-Enlighten.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BD9C4092C69E58849F52E95 /* libPods-Enlighten.a */; };
 		A88E8C1C1AA911B6009D53F8 /* ImageCapturer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A88E8C1B1AA911B6009D53F8 /* ImageCapturer.mm */; };
 		A8AE26131AA4FCC0004E27A1 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26121AA4FCC0004E27A1 /* libc++.dylib */; };
 		A8AE26181AA4FFA7004E27A1 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26171AA4FFA7004E27A1 /* libstdc++.dylib */; };
-		A8AE261A1AA50032004E27A1 /* libPods-Enlighten-OpenCV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE26191AA50032004E27A1 /* libPods-Enlighten-OpenCV.a */; };
-		A8AE261C1AA50036004E27A1 /* libPods-Enlighten.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AE261B1AA50036004E27A1 /* libPods-Enlighten.a */; };
 		A8AE26201AA50354004E27A1 /* MainViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8AE261F1AA50354004E27A1 /* MainViewController.mm */; };
 		A8AE26251AA506A1004E27A1 /* OpenCVUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */; };
 		A8AF7B311A8D6D48008DF892 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B301A8D6D48008DF892 /* main.m */; };
@@ -47,10 +46,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A8AE261C1AA50036004E27A1 /* libPods-Enlighten.a in Frameworks */,
-				A8AE261A1AA50032004E27A1 /* libPods-Enlighten-OpenCV.a in Frameworks */,
 				A8AE26181AA4FFA7004E27A1 /* libstdc++.dylib in Frameworks */,
 				A8AE26131AA4FCC0004E27A1 /* libc++.dylib in Frameworks */,
+				8BA8E60FD5DDCA07406AF9FF /* libPods-Enlighten.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
