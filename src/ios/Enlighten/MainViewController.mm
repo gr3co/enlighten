@@ -147,6 +147,7 @@ using namespace cv;
      * order before we combine them in order to run signal processing.
      */
     Mat total = Mat();
+    Mat first = frames[0];
     for (int i = 0; i < frames.size(); i++) {
         total.push_back(frames[i]);
     }
@@ -154,6 +155,7 @@ using namespace cv;
     // this can be changed to literally any iterable datatype
     std::vector<float> avg;
     
+    // Take the average
     for (int i = 0; i < total.size().height; i++) {
         avg.push_back(mean(total.row(i))[0]);
     }
@@ -173,8 +175,11 @@ using namespace cv;
     
     NSLog(@"data size =%lu", avg.size());
     
+    Mat dest;
+    cv::flip(first.t(), dest, 1);
+    
     // For some reason this takes a really long time, I don't know why
-    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:total]];
+    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:dest]];
     
     // Get rid of the loading icon when the image is displayed
     [MBProgressHUD hideHUDForView:self.view animated:YES];

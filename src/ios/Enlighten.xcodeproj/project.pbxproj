@@ -16,6 +16,7 @@
 		A8AF7B311A8D6D48008DF892 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B301A8D6D48008DF892 /* main.m */; };
 		A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B331A8D6D48008DF892 /* AppDelegate.m */; };
 		A8AF7B3C1A8D6D48008DF892 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */; };
+		D396B79F1AC907C400432734 /* DemodulationUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D396B79E1AC907C400432734 /* DemodulationUtils.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,8 @@
 		A8AF7B331A8D6D48008DF892 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A8AF7B351A8D6D48008DF892 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		D396B79E1AC907C400432734 /* DemodulationUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DemodulationUtils.mm; sourceTree = "<group>"; };
+		D396B7A01AC907DE00432734 /* DemodulationUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemodulationUtils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +111,8 @@
 				A8AE26211AA505CD004E27A1 /* OpenCVUtils.h */,
 				A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */,
 				A8AF7B2E1A8D6D48008DF892 /* Supporting Files */,
+				D396B79E1AC907C400432734 /* DemodulationUtils.mm */,
+				D396B7A01AC907DE00432734 /* DemodulationUtils.h */,
 			);
 			path = Enlighten;
 			sourceTree = "<group>";
@@ -225,6 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D396B79F1AC907C400432734 /* DemodulationUtils.mm in Sources */,
 				A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */,
 				A8AE26201AA50354004E27A1 /* MainViewController.mm in Sources */,
 				A8AE26251AA506A1004E27A1 /* OpenCVUtils.mm in Sources */,
