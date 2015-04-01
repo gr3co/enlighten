@@ -37,6 +37,7 @@
 
 + (UIImage *)UIImageFromCvMat:(cv::Mat)cvMat
 {
+    
     NSData *data = [NSData dataWithBytes:cvMat.data length:cvMat.elemSize()*cvMat.total()];
     CGColorSpaceRef colorSpace;
     

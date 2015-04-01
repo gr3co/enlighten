@@ -17,6 +17,7 @@
 @protocol ImageCapturerDelegate <NSObject>
 
 @required
+- (void) imageCapturerDidProcessPreviewFrame:(cv::Mat&) frame;
 - (void) imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&) frames;
 
 @end
@@ -47,5 +48,7 @@
 
 // Self-explanatory
 @property id<ImageCapturerDelegate> delegate;
+
+@property BOOL isRecording;
 
 @end

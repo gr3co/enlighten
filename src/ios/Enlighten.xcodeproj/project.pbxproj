@@ -103,6 +103,8 @@
 			children = (
 				A8AF7B321A8D6D48008DF892 /* AppDelegate.h */,
 				A8AF7B331A8D6D48008DF892 /* AppDelegate.m */,
+				D396B7A01AC907DE00432734 /* DemodulationUtils.h */,
+				D396B79E1AC907C400432734 /* DemodulationUtils.mm */,
 				A88E8C181AA90ED5009D53F8 /* ImageCapturer.h */,
 				A88E8C1B1AA911B6009D53F8 /* ImageCapturer.mm */,
 				A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */,
@@ -111,8 +113,6 @@
 				A8AE26211AA505CD004E27A1 /* OpenCVUtils.h */,
 				A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */,
 				A8AF7B2E1A8D6D48008DF892 /* Supporting Files */,
-				D396B79E1AC907C400432734 /* DemodulationUtils.mm */,
-				D396B7A01AC907DE00432734 /* DemodulationUtils.h */,
 			);
 			path = Enlighten;
 			sourceTree = "<group>";

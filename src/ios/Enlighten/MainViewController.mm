@@ -11,7 +11,6 @@
 #import "MainViewController.h"
 #import "OpenCVUtils.h"
 #import "ImageCapturer.h"
-#include <vector>
 
 using namespace cv;
 
@@ -29,15 +28,17 @@ using namespace cv;
                                                  blue:7/255.0
                                                 alpha:1.0];
     
-    _button = [[UIButton alloc] initWithFrame:CGRectMake(10, 50, 300, 50)];
-    [_button setTitle:@"Capture Image" forState:UIControlStateNormal];
+    CGSize frameSize = self.view.frame.size;
+    
+    _button = [[UIButton alloc] initWithFrame:CGRectMake(frameSize.width / 2 - 100,
+                                                         frameSize.height - 100, 200, 50)];
+    [_button setBackgroundColor:[UIColor whiteColor]];
+    [_button setTitle:@"Capture Frames" forState:UIControlStateNormal];
     [_button setTitle: @"Capture Unavailable" forState:UIControlStateDisabled];
     
     // Whenever the button is pressed, we want to call the captureImage method defined below
     [_button addTarget:self action:@selector(captureImages) forControlEvents:UIControlEventTouchUpInside];
     [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
-    
-    [self.view addSubview:_button];
     
     
     // Set up the capture session to the default settings for 720p
@@ -107,9 +108,14 @@ using namespace cv;
         _capturer = [[ImageCapturer alloc] initWithCaptureSession:_captureSession];
         _capturer.delegate = self;
         
+        [_captureSession startRunning];
+        
     }
         
-    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 100, 300, 500)];
+    _imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    _imageView.userInteractionEnabled = YES;
+    [_imageView addSubview:_button];
     [self.view addSubview:_imageView];
 
 }
@@ -131,7 +137,7 @@ using namespace cv;
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 }
 
-- (void)imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&)frames {
+- (void)imageCapturerDidCaptureFrames:(std::vector<Mat>&)frames {
     
     /* 
      * The lines below this simply append the matrices from the vector
@@ -172,19 +178,25 @@ using namespace cv;
         NSLog(@"capture took %.2fms", elapsed * 1000.0);
         startTime = nil;
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Get rid of the loading icon when the image is displayed
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        isCapturing = NO;
+        
+        // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
+    });
     
-    NSLog(@"data size =%lu", avg.size());
-    
-    Mat dest;
-    cv::flip(first.t(), dest, 1);
-    
-    // For some reason this takes a really long time, I don't know why
-    [_imageView setImage:[OpenCVUtils UIImageFromCvMat:dest]];
-    
-    // Get rid of the loading icon when the image is displayed
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    isCapturing = NO;
-    
+}
+
+- (void) imageCapturerDidProcessPreviewFrame:(Mat &)frame {
+    transpose(frame, frame);
+    flip(frame, frame, 1);
+    UIImage *image = [OpenCVUtils UIImageFromCvMat:frame];
+    ~frame;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.imageView setImage:image];
+    });
 }
 
 @end

@@ -37,15 +37,6 @@ using namespace cv;
  didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         fromConnection:(AVCaptureConnection *)connection {
     
-    // Once we've collected 60 frames, stop recording and send the
-    // frames to the delegate in order to process them
-    if (_currentFrames.size() >= FRAME_COUNT) {
-        NSLog(@"stopping capture");
-        [_session stopRunning];
-        [_delegate imageCapturerDidCaptureFrames:_currentFrames];
-        return;
-    }
-    
     // Below we're just generating an OpenCV Matrix from the raw
     // pixel data given to us by the sampleBuffer
     CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -67,12 +58,25 @@ using namespace cv;
     // unlock again
     CVPixelBufferUnlockBaseAddress(imgBuf, 0);
     
-    // Add the matrix to the current list of matrices
-    _currentFrames.push_back(image);
-    
-    // logging is always fun
-    if (_currentFrames.size() % 5 == 0) {
-        NSLog(@"captured %d frames", (int)_currentFrames.size());
+    if (_isRecording) {
+        // Once we've collected 60 frames, stop recording and send the
+        // frames to the delegate in order to process them
+        if (_currentFrames.size() >= FRAME_COUNT) {
+            NSLog(@"stopping capture");
+            _isRecording = NO;
+            [_delegate imageCapturerDidCaptureFrames:_currentFrames];
+            return;
+        }
+        
+        // Add the matrix to the current list of matrices
+        _currentFrames.push_back(image);
+        
+        // logging is always fun
+        if (_currentFrames.size() % 5 == 0) {
+            NSLog(@"captured %d frames", (int)_currentFrames.size());
+        }
+    } else {
+        [_delegate imageCapturerDidProcessPreviewFrame:image];
     }
     
 }
@@ -80,12 +84,13 @@ using namespace cv;
 // Start capturing frames then send to delegate
 - (void) captureFrames {
     
-    if ([_session isRunning]) {
+    if (_isRecording) {
         @throw @"Session already running.";
     }
+    
     NSLog(@"starting capture");
     _currentFrames = std::vector<Mat>();
-    [_session startRunning];
+    _isRecording = YES;
     
 }
 
