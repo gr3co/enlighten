@@ -75,7 +75,7 @@ using namespace cv;
             CMFormatDescriptionRef description = format.formatDescription;
             float maxrate = ((AVFrameRateRange*)[format.videoSupportedFrameRateRanges objectAtIndex:0]).maxFrameRate;
             
-            if (maxrate >= 60 &&
+            if (maxrate == 60 &&
                 CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange){
                 if ([backCamera lockForConfiguration:NULL]) {
                     backCamera.activeFormat = format;
@@ -89,11 +89,14 @@ using namespace cv;
                     [backCamera setFlashMode:AVCaptureFlashModeOff];
                     
                     // Adjust exposure to be as small as possible and ISO as big as possible
-                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,60)
+                    // Current format, iso 29-464 ; other format, iso 29-968
+                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,10000)
                                                               ISO:backCamera.activeFormat.maxISO
                                                 completionHandler:nil];
                     
                     [backCamera unlockForConfiguration];
+                    
+                    NSLog(@"min %f max %f", backCamera.activeFormat.minISO, backCamera.activeFormat.maxISO);
                     
                 }
             }
@@ -130,6 +133,11 @@ using namespace cv;
         return;
     }
     
+    if (![_captureSession isRunning]) {
+        [_captureSession startRunning];
+        return;
+    }
+    
     isCapturing = YES;
     startTime = [NSDate date];
     [_capturer captureFrames];
@@ -138,6 +146,9 @@ using namespace cv;
 }
 
 - (void)imageCapturerDidCaptureFrames:(std::vector<Mat>&)frames {
+    
+    [_captureSession stopRunning];
+    
     
     /* 
      * The lines below this simply append the matrices from the vector
