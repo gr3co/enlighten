@@ -13,9 +13,8 @@
 #import <opencv2/opencv.hpp>
 #endif
 
-@interface OpenCVUtils : NSObject
+@interface DemodulationUtils : NSObject
 
-+ (cv::Mat)cvMatFromUIImage:(UIImage *)image;
-+ (UIImage *)UIImageFromCvMat:(cv::Mat)cvMat;
++ (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies;
 
 @end
