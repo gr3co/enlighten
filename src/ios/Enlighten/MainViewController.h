@@ -9,14 +9,17 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ImageCapturer.h"
+#import <GraphKit/GraphKit.h>
 
-@interface MainViewController : UIViewController <ImageCapturerDelegate>
+@interface MainViewController : UIViewController <ImageCapturerDelegate, GKLineGraphDataSource>
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 
 @property UIButton *button;
 @property ImageCapturer *capturer;
 @property UIImageView *imageView;
+
+@property cv::Mat fft;
 
 @end
 

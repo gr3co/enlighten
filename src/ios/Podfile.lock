@@ -1,13 +1,22 @@
 PODS:
+  - FrameAccessor (1.3.2)
+  - GraphKit (1.1.1):
+    - FrameAccessor (~> 1.3.2)
+    - MKFoundationKit/NSArray (~> 1.2.2)
   - MBProgressHUD (0.9.1)
+  - MKFoundationKit/NSArray (1.2.3)
   - OpenCV (2.4.9.1)
 
 DEPENDENCIES:
+  - GraphKit (~> 1.1.1)
   - MBProgressHUD (~> 0.9.1)
   - OpenCV (= 2.4.9.1)
 
 SPEC CHECKSUMS:
+  FrameAccessor: 0f7ba6ce37be9a5d0302a27c731dca70af8d438b
+  GraphKit: e2336bed87d9313020af525dedbca54b62e93533
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
+  MKFoundationKit: 882d74557944790d4d9e172961ed71d6a66804b7
   OpenCV: 6a30a4f71e5b5a879e6f290acc37f1b5115d5fa6
 
 COCOAPODS: 0.35.0

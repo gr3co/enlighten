@@ -11,6 +11,7 @@
 #import "MainViewController.h"
 #import "OpenCVUtils.h"
 #import "ImageCapturer.h"
+#import "DemodulationUtils.h"
 
 using namespace cv;
 
@@ -165,17 +166,21 @@ using namespace cv;
      */
     Mat total = Mat();
     Mat first = frames[0];
+    NSLog(@"One frame size = %i x %i", first.rows, first.cols);
     for (int i = 0; i < frames.size(); i++) {
         total.push_back(frames[i]);
     }
     
     // this can be changed to literally any iterable datatype
-    std::vector<float> avg;
+    Mat avg = Mat();
     
     // Take the average
     for (int i = 0; i < total.size().height; i++) {
-        avg.push_back(mean(total.row(i))[0]);
+        avg.push_back((double)mean(total.row(i))[0]);
     }
+    
+    NSLog(@"Total size is %i x %i", total.rows, total.cols);
+    NSLog(@"Average vector length: %i", avg.rows);
     
     // Fuck yeah memory management
     frames.clear();
@@ -196,6 +201,19 @@ using namespace cv;
         isCapturing = NO;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
+        Mat freq = Mat();
+        freq.push_back((double)80.0);
+        _fft = [DemodulationUtils getFFT:avg withFreq:freq];
+        
+        GKLineGraph *graphView = [[GKLineGraph alloc] initWithFrame:
+                                  CGRectMake(0, 200, self.view.frame.size.width, 200)];
+        
+        graphView.dataSource = self;
+        graphView.lineWidth = 3.0;
+        
+        [graphView draw];
+        
+        [_imageView addSubview:graphView];
     });
     
 }
@@ -208,6 +226,34 @@ using namespace cv;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.imageView setImage:image];
     });
+}
+
+- (NSInteger)numberOfLines {
+    return 1;
+}
+
+- (UIColor *)colorForLineAtIndex:(NSInteger)index {
+    return [UIColor blueColor];
+}
+
+- (NSArray *)valuesForLineAtIndex:(NSInteger)index {
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    //for (int i = 0; i < _fft.rows; i++) {
+    //    [array addObject:@((double)_fft.at<double>(i, 0))];
+    //}
+    //NSLog(@"%@", array);
+    for (int i = 0; i < 1080; i++) {
+        [array addObject:@(sqrt(i))];
+    }
+    return array;
+}
+
+- (CFTimeInterval)animationDurationForLineAtIndex:(NSInteger)index {
+    return 0;
+}
+
+- (NSString *)titleForLineAtIndex:(NSInteger)index {
+    return @"FFT";
 }
 
 @end
