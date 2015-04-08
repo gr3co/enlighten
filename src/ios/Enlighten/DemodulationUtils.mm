@@ -53,12 +53,20 @@
         
         thisImage = thisImage.t().mul(hann.t()).t();
         
+        // This is copied from OpenCV documentation on how to use DFT
+        cv::Mat padded;                            //expand input image to optimal size
+        int m = cv::getOptimalDFTSize( thisImage.rows );
+        int n = cv::getOptimalDFTSize( thisImage.cols ); // on the border add zero values
+        cv::copyMakeBorder(thisImage, padded, 0, m - thisImage.rows, 0, n - thisImage.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
         
-        cv::Mat planes[] = {cv::Mat_<float>(thisImage), cv::Mat::zeros(thisImage.size(), CV_64F)};
-        cv::Mat thisFft = cv::Mat();
-        cv::dft(thisImage, thisFft);
-        cv::split(thisFft, planes);
-        magnitude(planes[0], planes[1], thisFft);
+        cv::Mat planes[] = {cv::Mat_<double>(padded), cv::Mat::zeros(padded.size(), CV_64F)};
+        cv::Mat complexI;
+        cv::merge(planes, 2, complexI);
+        
+        cv::dft(complexI, complexI);
+        cv::split(complexI, planes);
+        cv::magnitude(planes[0], planes[1], planes[0]);
+        cv::Mat thisFft = planes[0];
         
         NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
         
@@ -68,6 +76,7 @@
             cv::Mat releventFreqs = thisFft.rowRange(freq - 2, freq + 2);
             cv::Mat squared = releventFreqs.mul(releventFreqs);
             double val = sqrt(sum(squared)[0] / 5);
+            if (isnan(val)) val = 0;
             computedFft.at<double>(h, j) = abs(val);
         }
         h++;

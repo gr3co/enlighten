@@ -19,7 +19,7 @@
 @property ImageCapturer *capturer;
 @property UIImageView *imageView;
 
-@property cv::Mat fft;
+@property NSMutableArray *fft;
 
 @end
 

@@ -203,7 +203,11 @@ using namespace cv;
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
         freq.push_back((double)80.0);
-        _fft = [DemodulationUtils getFFT:avg withFreq:freq];
+        Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
+        _fft = [[NSMutableArray alloc] init];
+        for (int i = 0; i < result.rows; i++) {
+            [_fft addObject:@((double)result.at<double>(i, 0))];
+        }
         
         GKLineGraph *graphView = [[GKLineGraph alloc] initWithFrame:
                                   CGRectMake(0, 200, self.view.frame.size.width, 200)];
@@ -237,15 +241,7 @@ using namespace cv;
 }
 
 - (NSArray *)valuesForLineAtIndex:(NSInteger)index {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    //for (int i = 0; i < _fft.rows; i++) {
-    //    [array addObject:@((double)_fft.at<double>(i, 0))];
-    //}
-    //NSLog(@"%@", array);
-    for (int i = 0; i < 1080; i++) {
-        [array addObject:@(sqrt(i))];
-    }
-    return array;
+    return _fft;
 }
 
 - (CFTimeInterval)animationDurationForLineAtIndex:(NSInteger)index {
