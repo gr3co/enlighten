@@ -91,7 +91,7 @@ using namespace cv;
                     
                     // Adjust exposure to be as small as possible and ISO as big as possible
                     // Current format, iso 29-464 ; other format, iso 29-968
-                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,10000)
+                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,64800)
                                                               ISO:backCamera.activeFormat.maxISO
                                                 completionHandler:nil];
                     
@@ -202,7 +202,7 @@ using namespace cv;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back((double)80.0);
+        freq.push_back((double)150.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
         _fft = [[NSMutableArray alloc] init];
         for (int i = 0; i < result.rows; i++) {

@@ -23,7 +23,7 @@
 
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
 {
-    NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
+    //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
     // This should be the same size as a single image height
     int Nfft = 1080;
     // This is how far apart our samples are for each sample
@@ -41,15 +41,15 @@
     int h = 0;
     for (int i = 0; i < imageRows.rows - Nfft; i+= stepSize) {
         //First get a Mat representing this image
-        NSLog(@"FFTing on window from %i to %i", i, i+Nfft);
+        //NSLog(@"FFTing on window from %i to %i", i, i+Nfft);
         cv::Mat thisImage = imageRows.rowRange(i, i + Nfft);
         
         int pixel_new = i % Nfft;
         int pixel_old = Nfft - pixel_new;
         cv::Mat hann = [DemodulationUtils getHann:pixel_old];
         hann.push_back([DemodulationUtils getHann:pixel_new]);
-        NSLog(@"Have hann filter of size %i by %i", hann.size().height, hann.size().width);
-        NSLog(@"Have matrix size %i by %i", thisImage.size().height, thisImage.size().width);
+        //NSLog(@"Have hann filter of size %i by %i", hann.size().height, hann.size().width);
+        //NSLog(@"Have matrix size %i by %i", thisImage.size().height, thisImage.size().width);
         
         thisImage = thisImage.t().mul(hann.t()).t();
         
@@ -64,23 +64,26 @@
         cv::merge(planes, 2, complexI);
         
         cv::dft(complexI, complexI);
+
+        
         cv::split(complexI, planes);
         cv::magnitude(planes[0], planes[1], planes[0]);
         cv::Mat thisFft = planes[0];
         
-        NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
+        //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
         
         // Iterate through the target frequencies
         for (int j = 0; j < numFreqs; j++) {
             double freq = frequencies.at<double>(0, j);
-            cv::Mat releventFreqs = thisFft.rowRange(freq - 2, freq + 2);
+            cv::Mat releventFreqs = thisFft.rowRange(freq - 3, freq + 3);
             cv::Mat squared = releventFreqs.mul(releventFreqs);
             double val = sqrt(sum(squared)[0] / 5);
             if (isnan(val)) val = 0;
-            computedFft.at<double>(h, j) = abs(val);
+            computedFft.at<double>(h, j) = val;
         }
         h++;
     }
+    std::cout << computedFft.t() << std::endl;
     return computedFft;
 }
 
