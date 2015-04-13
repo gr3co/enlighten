@@ -222,6 +222,19 @@ using namespace cv;
     
 }
 
+- (cv::Mat)getTestImage {
+    cv::Mat total = cv::Mat();
+    
+    for(int i = 0; i < 31; i++)
+    {
+        NSString *path = [NSString stringWithFormat: @"Enlighten/DataSet/2014-03-13-22_27_49_659_pos09_sp04_L1_and_3_off/%02i.TIFF", i];
+        cv::Mat thisImage;
+        thisImage = cv::imread([path UTF8String]);
+        total.push_back(thisImage);
+    }
+    return total;
+}
+
 - (void) imageCapturerDidProcessPreviewFrame:(Mat &)frame {
     transpose(frame, frame);
     flip(frame, frame, 1);
