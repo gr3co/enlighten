@@ -70,22 +70,25 @@
         cv::magnitude(planes[0], planes[1], planes[0]);
         cv::Mat thisFft = planes[0];
         
+        if (h == 30) {
+            //std::cout << thisFft.t() << std::endl;
+        }
+        
         //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
         
         // Iterate through the target frequencies
         for (int j = 0; j < numFreqs; j++) {
             double realFreq = frequencies.at<double>(0, j);
-            double transFreq = (37500) / realFreq;
-            cv::Mat releventFreqs = thisFft.rowRange(transFreq - 2, transFreq + 2);
+            int transFreq = floor((realFreq * 1080.0) / (37500.0));
+            cv::Mat releventFreqs = thisFft.rowRange(transFreq - 5, transFreq + 5);
+            NSLog(@"%f", thisFft.at<double>(transFreq));
             cv::Mat squared = releventFreqs.mul(releventFreqs);
             double val = sqrt(sum(squared)[0] / 5);
-            if (isnan(val)) val = 0;
             computedFft.at<double>(h, j) = std::abs(val);
-
         }
         h++;
     }
-    std::cout << computedFft.t() << std::endl;
+    //std::cout << computedFft.t() << std::endl;
     return computedFft;
 }
 

@@ -9,9 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ImageCapturer.h"
-#import <GraphKit/GraphKit.h>
 
-@interface MainViewController : UIViewController <ImageCapturerDelegate, GKLineGraphDataSource>
+@interface MainViewController : UIViewController <ImageCapturerDelegate>
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 

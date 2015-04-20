@@ -91,7 +91,7 @@ using namespace cv;
                     
                     // Adjust exposure to be as small as possible and ISO as big as possible
                     // Current format, iso 29-464 ; other format, iso 29-968
-                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,64800)
+                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,10000)
                                                               ISO:backCamera.activeFormat.maxISO
                                                 completionHandler:nil];
                     
@@ -205,22 +205,13 @@ using namespace cv;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back((double)150.0);
+        freq.push_back(2000.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
         _fft = [[NSMutableArray alloc] init];
         for (int i = 0; i < result.rows; i++) {
             [_fft addObject:@((double)result.at<double>(i, 0))];
         }
         
-        GKLineGraph *graphView = [[GKLineGraph alloc] initWithFrame:
-                                  CGRectMake(0, 200, self.view.frame.size.width, 200)];
-        
-        graphView.dataSource = self;
-        graphView.lineWidth = 3.0;
-        
-        [graphView draw];
-        
-        [_imageView addSubview:graphView];
     });
     
 }
@@ -248,24 +239,5 @@ using namespace cv;
     });
 }
 
-- (NSInteger)numberOfLines {
-    return 1;
-}
-
-- (UIColor *)colorForLineAtIndex:(NSInteger)index {
-    return [UIColor blueColor];
-}
-
-- (NSArray *)valuesForLineAtIndex:(NSInteger)index {
-    return _fft;
-}
-
-- (CFTimeInterval)animationDurationForLineAtIndex:(NSInteger)index {
-    return 0;
-}
-
-- (NSString *)titleForLineAtIndex:(NSInteger)index {
-    return @"FFT";
-}
 
 @end
