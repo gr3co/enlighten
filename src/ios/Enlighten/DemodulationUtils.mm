@@ -72,12 +72,13 @@
         
         // Iterate through the target frequencies
         for (int j = 0; j < numFreqs; j++) {
-            double freq = frequencies.at<double>(0, j);
-            cv::Mat releventFreqs = thisFft.rowRange(freq - 2, freq + 2);
+            double realFreq = frequencies.at<double>(0, j);
+            double transFreq = (37500) / realFreq;
+            cv::Mat releventFreqs = thisFft.rowRange(transFreq - 2, transFreq + 2);
             cv::Mat squared = releventFreqs.mul(releventFreqs);
             double val = sqrt(sum(squared)[0] / 5);
             if (isnan(val)) val = 0;
-            computedFft.at<double>(h, j) = abs(val);
+            computedFft.at<double>(h, j) = std::abs(val);
         }
         h++;
     }

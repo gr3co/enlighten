@@ -200,6 +200,9 @@ using namespace cv;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         isCapturing = NO;
         
+        // Get the test mat
+        Mat testImage = [self getTestImage];
+        
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
         freq.push_back((double)80.0);
