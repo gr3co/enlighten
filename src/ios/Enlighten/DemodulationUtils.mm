@@ -15,7 +15,7 @@
     cv::Mat window = cv::Mat();
     for (int i = 0; i < n; i++)
     {
-        double multiplier = 0.5 * (1 - cos(2 * M_PI / (n - 1)));
+        double multiplier = 0.5 * (1 - cos(2.0 * M_PI * i / (n - 1.0)));
         window.push_back(multiplier);
     }
     return window;
@@ -32,11 +32,11 @@
     //int numFrames = imageRows.rows / Nfft;
     
     // The number of frequencies we are scanning for
-    int numFreqs = frequencies.cols;
+    int numFreqs = frequencies.rows;
     
     //int endVal = (numFrames - 1) * imageRows.rows;
     int numWindows = imageRows.rows / stepSize;
-    cv::Mat computedFft = cv::Mat(numWindows, frequencies.cols, 0);
+    cv::Mat computedFft = cv::Mat(numWindows, numFreqs, CV_64F);
     
     int h = 0;
     for (int i = 0; i < imageRows.rows - Nfft; i+= stepSize) {
@@ -48,10 +48,16 @@
         int pixel_old = Nfft - pixel_new;
         cv::Mat hann = [DemodulationUtils getHann:pixel_old];
         hann.push_back([DemodulationUtils getHann:pixel_new]);
+        
+        if (h == 0 || h == 5) {
+            //std::cout << hann.t() << std::endl;
+        }
+        
+        
         //NSLog(@"Have hann filter of size %i by %i", hann.size().height, hann.size().width);
         //NSLog(@"Have matrix size %i by %i", thisImage.size().height, thisImage.size().width);
         
-        thisImage = thisImage.t().mul(hann.t()).t();
+        thisImage = thisImage.mul(hann);
         
         // This is copied from OpenCV documentation on how to use DFT
         cv::Mat padded;                            //expand input image to optimal size
@@ -65,12 +71,13 @@
         
         cv::dft(complexI, complexI);
 
-        
         cv::split(complexI, planes);
         cv::magnitude(planes[0], planes[1], planes[0]);
         cv::Mat thisFft = planes[0];
         
-        if (h == 30) {
+        cv::normalize(thisFft, thisFft, 0, 255, cv::NORM_MINMAX);
+        
+        if (h == 1) {
             //std::cout << thisFft.t() << std::endl;
         }
         
@@ -78,17 +85,18 @@
         
         // Iterate through the target frequencies
         for (int j = 0; j < numFreqs; j++) {
-            double realFreq = frequencies.at<double>(0, j);
-            int transFreq = floor((realFreq * 1080.0) / (37500.0));
-            cv::Mat releventFreqs = thisFft.rowRange(transFreq - 5, transFreq + 5);
-            NSLog(@"%f", thisFft.at<double>(transFreq));
+            double realFreq = frequencies.at<double>(j, 0);
+            int transFreq = floor(realFreq / 60.0);
+            cv::Mat releventFreqs = thisFft.rowRange(transFreq - 3, transFreq + 3);
             cv::Mat squared = releventFreqs.mul(releventFreqs);
-            double val = sqrt(sum(squared)[0] / 5);
-            computedFft.at<double>(h, j) = std::abs(val);
+            double val = sqrt(sum(squared)[0] / 6);
+            computedFft.at<double>(h, j) = val;
         }
         h++;
     }
-    //std::cout << computedFft.t() << std::endl;
+    std::cout << frequencies.t() << std::endl;
+    std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
+    std::cout << computedFft.t() << std::endl;
     return computedFft;
 }
 

@@ -91,13 +91,13 @@ using namespace cv;
                     
                     // Adjust exposure to be as small as possible and ISO as big as possible
                     // Current format, iso 29-464 ; other format, iso 29-968
-                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,10000)
+                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,6400)
                                                               ISO:backCamera.activeFormat.maxISO
                                                 completionHandler:nil];
                     
                     [backCamera unlockForConfiguration];
                     
-                    NSLog(@"min %f max %f", backCamera.activeFormat.minISO, backCamera.activeFormat.maxISO);
+                    //NSLog(@"min %f max %f", backCamera.activeFormat.minISO, backCamera.activeFormat.maxISO);
                     
                 }
             }
@@ -184,7 +184,7 @@ using namespace cv;
     
     // Fuck yeah memory management
     frames.clear();
-    ~total;
+
     
     // The time we are displaying below is from when we press the button
     // to when the final matrix is created and ready for processing.
@@ -200,17 +200,35 @@ using namespace cv;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         isCapturing = NO;
         
-        // Get the test mat
-        Mat testImage = [self getTestImage];
+        // SHOW THE INPUTTED SIGNAL
+        UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:_imageView.frame];
+        [scrollView setBackgroundColor:[UIColor blackColor]];
+        [scrollView setCanCancelContentTouches:NO];
+        scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+        scrollView.delegate = self;
+        [scrollView setScrollEnabled:YES];
+        Mat trans;
+        transpose(total, trans);
+        flip(trans, trans, 1);
+        UIImage *image = [OpenCVUtils UIImageFromCvMat:trans];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        [imageView setFrame:CGRectMake(0, 0,
+                                       image.size.width * (_imageView.frame.size.height / image.size.height),
+                                       _imageView.frame.size.height)];
+        [scrollView setContentSize:CGSizeMake(imageView.frame.size.width, _imageView.frame.size.height)];
+        [scrollView addSubview:imageView];
+        [_imageView addSubview:scrollView];
+        /////////////
+        
+        ~total;
+        ~trans;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
+        freq.push_back(1600.0);
         freq.push_back(2000.0);
+        freq.push_back(2400.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
-        _fft = [[NSMutableArray alloc] init];
-        for (int i = 0; i < result.rows; i++) {
-            [_fft addObject:@((double)result.at<double>(i, 0))];
-        }
         
     });
     

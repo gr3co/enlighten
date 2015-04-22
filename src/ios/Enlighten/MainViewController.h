@@ -10,15 +10,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ImageCapturer.h"
 
-@interface MainViewController : UIViewController <ImageCapturerDelegate>
+@interface MainViewController : UIViewController <ImageCapturerDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 
 @property UIButton *button;
 @property ImageCapturer *capturer;
 @property UIImageView *imageView;
-
-@property NSMutableArray *fft;
 
 @end
 
