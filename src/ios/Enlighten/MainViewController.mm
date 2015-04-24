@@ -91,7 +91,7 @@ using namespace cv;
                     
                     // Adjust exposure to be as small as possible and ISO as big as possible
                     // Current format, iso 29-464 ; other format, iso 29-968
-                    [backCamera setExposureModeCustomWithDuration:CMTimeMake(1,6400)
+                    [backCamera setExposureModeCustomWithDuration:backCamera.activeFormat.minExposureDuration
                                                               ISO:backCamera.activeFormat.maxISO
                                                 completionHandler:nil];
                     
@@ -168,10 +168,8 @@ using namespace cv;
     Mat first = frames[0];
     NSLog(@"One frame size = %i x %i", first.rows, first.cols);
     for (int i = 0; i < frames.size(); i++) {
-        flip(frames[i], frames[i], 0);
         total.push_back(frames[i]);
     }
-    flip(total, total, 0);
     
     // this can be changed to literally any iterable datatype
     Mat avg = Mat();
@@ -227,9 +225,9 @@ using namespace cv;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back(1000.0);
-        freq.push_back(2000.0);
-        freq.push_back(3000.0);
+        freq.push_back(1500.0);
+        freq.push_back(2400.0);
+        freq.push_back(3300.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
         
     });

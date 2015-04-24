@@ -32,7 +32,7 @@ int preambleFrames = 30;
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
 {
     
-    std::cout << imageRows.t() << std::endl;
+    //std::cout << imageRows.t() << std::endl;
     
     //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
     //int numFrames = imageRows.rows / Nfft;
@@ -42,7 +42,7 @@ int preambleFrames = 30;
     
     //int endVal = (numFrames - 1) * imageRows.rows;
     int numWindows = imageRows.rows / stepSize;
-    cv::Mat computedFft = cv::Mat(numWindows, numFreqs, CV_64F);
+    cv::Mat computedFft = cv::Mat(numFreqs, numWindows, CV_64F);
     
     int h = 0;
     for (int i = 0; i < imageRows.rows - Nfft; i+= stepSize) {
@@ -83,8 +83,8 @@ int preambleFrames = 30;
         
         cv::normalize(thisFft, thisFft, 0, 255, cv::NORM_MINMAX);
         
-        if (h == 30 || h == 180) {
-            std::cout << thisFft.t() << std::endl;
+        if (h == 155 || h == 255) {
+            //std::cout << thisFft << std::endl;
         }
         
         //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
@@ -103,7 +103,7 @@ int preambleFrames = 30;
     }
     //std::cout << frequencies.t() << std::endl;
     //std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
-    //std::cout << computedFft.t() << std::endl;
+    std::cout << computedFft << std::endl;
     
     return computedFft;
 }
