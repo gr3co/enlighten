@@ -124,15 +124,15 @@ int preambleFrames = 30;
     int preambleIdx;
     minMaxIdx(preambleContainer, 0, 0, 0, &preambleIdx);
 
-    std::cout << 'preamble is located at ' << preambleIdx << std::endl;
+    std::cout << "preamble is located at " << preambleIdx << std::endl;
 
-    int jumpPreamble = cv::cvRound((preRate + dataRate) / 2) * stepsPerFrame;
-    int jumpData = cv::cvRound(dataRate * stepsPerFrame);
+    int jumpPreamble = round((preRate + dataRate) / 2) * stepsPerFrame;
+    int jumpData = round(dataRate * stepsPerFrame);
 
     int idxOn = preambleIdx + jumpPreamble;
 
-    double offVal = dataFft.at(0,preambleIdx);
-    double onVal = dataFft.at(0, idxOn);
+    double offVal = dataFft.at<double>(0,preambleIdx);
+    double onVal = dataFft.at<double>(0, idxOn);
 
     // This is the threshold to determine whether or not data is 0 or 1
     double threshold = (onVal + offVal) / 2;
@@ -143,19 +143,17 @@ int preambleFrames = 30;
     // Demod data should be an array of single bytes which are 0 or 1
     cv::Mat demodData = cv::Mat(1, dataBits, CV_8U);
 
-    if (preambleIdx + byteLength > numberSamples)
-    {
+    if (preambleIdx + byteLength > numberSamples) {
         // this should handle the error gracefully, this should never happen
         // because if the preamble is detected in the back half of the image,
         // then it didn't actually find a viable preamble.
-        continue;
+        
     } else {
-        for (int i = 1; i < dataBits; i++)
-        {
+        for (int i = 1; i < dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
-            double signalVal = dataFft.at(0, bitIdx);
+            double signalVal = dataFft.at<double>(0, bitIdx);
             int demodVal = signalVal > threshold;
-            demodData.at(0,i) = demodVal;
+            demodData.at<double>(0,i) = demodVal;
         }
     }
     return demodData;

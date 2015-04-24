@@ -17,6 +17,9 @@
 
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies;
 
-+ (cv::Mat)getData:(cv::Mat)fftOverTime;
++ (cv::Mat) getData: (cv::Mat)fftOverTime
+preRate: (double)preRate
+dataRate: (double)dataRate
+dataBits: (double)dataBits;
 
 @end
