@@ -23,6 +23,9 @@
 
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
 {
+    
+    std::cout << imageRows.t() << std::endl;
+    
     //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
     // This should be the same size as a single image height
     int Nfft = 1080;
@@ -77,8 +80,8 @@
         
         cv::normalize(thisFft, thisFft, 0, 255, cv::NORM_MINMAX);
         
-        if (h == 1) {
-            //std::cout << thisFft.t() << std::endl;
+        if (h == 30 || h == 180) {
+            std::cout << thisFft.t() << std::endl;
         }
         
         //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
@@ -94,9 +97,10 @@
         }
         h++;
     }
-    std::cout << frequencies.t() << std::endl;
-    std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
-    std::cout << computedFft.t() << std::endl;
+    //std::cout << frequencies.t() << std::endl;
+    //std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
+    //std::cout << computedFft.t() << std::endl;
+    
     return computedFft;
 }
 

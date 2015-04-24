@@ -168,8 +168,10 @@ using namespace cv;
     Mat first = frames[0];
     NSLog(@"One frame size = %i x %i", first.rows, first.cols);
     for (int i = 0; i < frames.size(); i++) {
+        flip(frames[i], frames[i], 0);
         total.push_back(frames[i]);
     }
+    flip(total, total, 0);
     
     // this can be changed to literally any iterable datatype
     Mat avg = Mat();
@@ -225,9 +227,9 @@ using namespace cv;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back(1600.0);
+        freq.push_back(1000.0);
         freq.push_back(2000.0);
-        freq.push_back(2400.0);
+        freq.push_back(3000.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
         
     });
