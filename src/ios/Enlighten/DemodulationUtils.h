@@ -17,4 +17,6 @@
 
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies;
 
++ (cv::Mat)getData:(cv::Mat)fftOverTime;
+
 @end

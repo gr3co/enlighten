@@ -8,6 +8,14 @@
 
 #import "DemodulationUtils.h"
 
+// This should be the same size as a single image height
+int Nfft = 1080;
+// This is how far apart our samples are for each sample
+int stepsPerFrame = 10;
+int stepSize = Nfft / stepsPerFrame;
+// This is how many frames could go by before we are sure to see the preamble
+int preambleFrames = 30;
+
 @implementation DemodulationUtils
 
 + (cv::Mat)getHann:(int)n
@@ -24,11 +32,6 @@
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
 {
     //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
-    // This should be the same size as a single image height
-    int Nfft = 1080;
-    // This is how far apart our samples are for each sample
-    int stepsPerFrame = 10;
-    int stepSize = Nfft / stepsPerFrame;
     //int numFrames = imageRows.rows / Nfft;
     
     // The number of frequencies we are scanning for
@@ -84,13 +87,14 @@
         //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
         
         // Iterate through the target frequencies
+        // The output has columns of frequencies, and rows over time
         for (int j = 0; j < numFreqs; j++) {
             double realFreq = frequencies.at<double>(j, 0);
             int transFreq = floor(realFreq / 60.0);
             cv::Mat releventFreqs = thisFft.rowRange(transFreq - 3, transFreq + 3);
             cv::Mat squared = releventFreqs.mul(releventFreqs);
             double val = sqrt(sum(squared)[0] / 6);
-            computedFft.at<double>(h, j) = val;
+            computedFft.at<double>(j,h) = val;
         }
         h++;
     }
@@ -100,5 +104,57 @@
     return computedFft;
 }
 
+//fftOverTime should be a 2xN matrix where the first row is the preamble
+//fft over time and the second row is the data frequency fft over time
++ (cv::Mat) getData:(cv::Mat)fftOverTime
+            preRate:(double)preRate
+            dataRate:(double)dataRate
+            dataBits:(double)dataBits
+{
+    //First we want to find a preamble peak, it should be the 
+    cv::Mat preambleFft = fftOverTime.row(0);
+    cv::Mat dataFft = fftOverTime.col(1);
+    int numberSamples = dataFft.cols;
+    cv::Mat preambleContainer =  preambleFft.rowRange(0, preambleFrames * stepsPerFrame+1);
+
+    int preambleIdx;
+    minMaxIdx(preambleContainer, 0, 0, 0, &preambleIdx);
+
+    std::cout << 'preamble is located at ' << preambleIdx << std::endl;
+
+    int jumpPreamble = cv::cvRound((preRate + dataRate) / 2) * stepsPerFrame;
+    int jumpData = cv::cvRound(dataRate * stepsPerFrame);
+
+    int idxOn = preambleIdx + jumpPreamble;
+
+    double offVal = dataFft.at(0,preambleIdx);
+    double onVal = dataFft.at(0, idxOn);
+
+    // This is the threshold to determine whether or not data is 0 or 1
+    double threshold = (onVal + offVal) / 2;
+
+    // We take the start of the transfer + sending the pilot on and the data
+    int byteLength = jumpPreamble + dataBits * jumpData;
+
+    // Demod data should be an array of single bytes which are 0 or 1
+    cv::Mat demodData = cv::Mat(1, dataBits, CV_8U);
+
+    if (preambleIdx + byteLength > numberSamples)
+    {
+        // this should handle the error gracefully, this should never happen
+        // because if the preamble is detected in the back half of the image,
+        // then it didn't actually find a viable preamble.
+        continue;
+    } else {
+        for (int i = 1; i < dataBits; i++)
+        {
+            int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
+            double signalVal = dataFft.at(0, bitIdx);
+            int demodVal = signalVal > threshold;
+            demodData.at(0,i) = demodVal;
+        }
+    }
+    return demodData;
+}
 
 @end
