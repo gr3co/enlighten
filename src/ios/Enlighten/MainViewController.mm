@@ -121,6 +121,19 @@ using namespace cv;
     _imageView.userInteractionEnabled = YES;
     [_imageView addSubview:_button];
     [self.view addSubview:_imageView];
+    
+    float width = self.view.frame.size.width;
+    float height = self.view.frame.size.height;
+    _resultLabel = [[UILabel alloc] initWithFrame:
+                    CGRectMake(0.25 * width,
+                               0.5 * height - 50,
+                               0.5*width, 100)];
+    _resultLabel.backgroundColor = [UIColor whiteColor];
+    _resultLabel.textColor = [UIColor redColor];
+    _resultLabel.textAlignment = NSTextAlignmentCenter;
+    _resultLabel.font = [UIFont fontWithName:@"Arial" size:36];
+    [_imageView addSubview:_resultLabel];
+    
 
 }
 
@@ -201,13 +214,27 @@ using namespace cv;
         freq.push_back(3300.0);
         freq.push_back(1500.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
-        Mat demodData = [DemodulationUtils getData:result preRate:3 dataRate:3 dataBits:6];
+        Mat demodData = [DemodulationUtils getData:result
+                                           preRate:1.5
+                                          dataRate:1.5
+                                          dataBits:16];
         
+        uint32_t demod = convertToInt(demodData);
+        _resultLabel.text = [NSString stringWithFormat:@"%x", demod];
         std::cout << demodData << std::endl;
         
     });
     
 }
+
+uint32_t convertToInt(Mat& data) {
+    uint32_t result = 0;
+    for (int i = 0; i < data.cols; i++) {
+        result |= (data.at<BOOL>(0,i) << i);
+    }
+    return result;
+}
+
 
 - (void) imageCapturerDidProcessPreviewFrame:(Mat &)frame {
     transpose(frame, frame);
