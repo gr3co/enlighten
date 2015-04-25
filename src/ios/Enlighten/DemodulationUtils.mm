@@ -35,7 +35,6 @@ int preambleFrames = 30;
     //std::cout << imageRows.t() << std::endl;
     
     //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
-    //int numFrames = imageRows.rows / Nfft;
     
     // The number of frequencies we are scanning for
     int numFreqs = frequencies.rows;
@@ -103,7 +102,7 @@ int preambleFrames = 30;
     }
     //std::cout << frequencies.t() << std::endl;
     //std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
-    std::cout << computedFft << std::endl;
+    //std::cout << computedFft << std::endl;
     
     return computedFft;
 }
@@ -119,8 +118,8 @@ int preambleFrames = 30;
     cv::Mat preambleFft = fftOverTime.row(0);
     cv::Mat dataFft = fftOverTime.row(1);
     int numberSamples = dataFft.cols;
-    NSLog(@"Number of samples is %i", numberSamples);
-    NSLog(@"Preamble search length is %i", preambleFrames * stepsPerFrame + 1);
+    //NSLog(@"Number of samples is %i", numberSamples);
+    //NSLog(@"Preamble search length is %i", preambleFrames * stepsPerFrame + 1);
     cv::Mat preambleContainer =  preambleFft.colRange(0, preambleFrames * stepsPerFrame+1);
 
     cv::Point preamblePoint;
@@ -128,12 +127,12 @@ int preambleFrames = 30;
 
     int preambleIdx = preamblePoint.x;
     
-    std::cout << "preamble is located at " << preambleIdx << std::endl;
+    //std::cout << "preamble is located at " << preambleIdx << std::endl;
 
     int jumpPreamble = round((preRate + dataRate) / 2) * stepsPerFrame;
     int jumpData = round(dataRate * stepsPerFrame);
 
-    NSLog(@"JumpPreamble is %i, jumpData is %i", jumpPreamble, jumpData);
+    //NSLog(@"JumpPreamble is %i, jumpData is %i", jumpPreamble, jumpData);
     
     int idxOn = preambleIdx + jumpPreamble;
 
@@ -143,7 +142,7 @@ int preambleFrames = 30;
     // This is the threshold to determine whether or not data is 0 or 1
     double threshold = (onVal + offVal) / 2;
 
-    NSLog(@"Threshold is %f", threshold);
+    //NSLog(@"Threshold is %f", threshold);
     
     // We take the start of the transfer + sending the pilot on and the data
     int byteLength = jumpPreamble + dataBits * jumpData;

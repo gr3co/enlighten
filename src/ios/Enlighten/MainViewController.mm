@@ -166,7 +166,7 @@ using namespace cv;
      */
     Mat total = Mat();
     Mat first = frames[0];
-    NSLog(@"One frame size = %i x %i", first.rows, first.cols);
+    //NSLog(@"One frame size = %i x %i", first.rows, first.cols);
     for (int i = 0; i < frames.size(); i++) {
         total.push_back(frames[i]);
     }
@@ -179,8 +179,8 @@ using namespace cv;
         avg.push_back((double)mean(total.row(i))[0]);
     }
     
-    NSLog(@"Total size is %i x %i", total.rows, total.cols);
-    NSLog(@"Average vector length: %i", avg.rows);
+    //NSLog(@"Total size is %i x %i", total.rows, total.cols);
+    //NSLog(@"Average vector length: %i", avg.rows);
     
     // Fuck yeah memory management
     frames.clear();
@@ -229,7 +229,7 @@ using namespace cv;
         freq.push_back(1500.0);
         //freq.push_back(2400.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
-        NSLog(@"FFTstore is %i by %i", result.rows, result.cols);
+        //NSLog(@"FFTstore is %i by %i", result.rows, result.cols);
         Mat demodData = [DemodulationUtils getData:result preRate:3 dataRate:3 dataBits:6];
         
         std::cout << demodData << std::endl;
