@@ -165,8 +165,6 @@ using namespace cv;
      * order before we combine them in order to run signal processing.
      */
     Mat total = Mat();
-    Mat first = frames[0];
-    //NSLog(@"One frame size = %i x %i", first.rows, first.cols);
     for (int i = 0; i < frames.size(); i++) {
         total.push_back(frames[i]);
     }
@@ -179,11 +177,9 @@ using namespace cv;
         avg.push_back((double)mean(total.row(i))[0]);
     }
     
-    //NSLog(@"Total size is %i x %i", total.rows, total.cols);
-    //NSLog(@"Average vector length: %i", avg.rows);
-    
     // Fuck yeah memory management
     frames.clear();
+    ~total;
 
     
     // The time we are displaying below is from when we press the button
@@ -200,55 +196,17 @@ using namespace cv;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         isCapturing = NO;
         
-        // SHOW THE INPUTTED SIGNAL
-        UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:_imageView.frame];
-        [scrollView setBackgroundColor:[UIColor blackColor]];
-        [scrollView setCanCancelContentTouches:NO];
-        scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-        scrollView.delegate = self;
-        [scrollView setScrollEnabled:YES];
-        Mat trans;
-        transpose(total, trans);
-        flip(trans, trans, 1);
-        UIImage *image = [OpenCVUtils UIImageFromCvMat:trans];
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        [imageView setFrame:CGRectMake(0, 0,
-                                       image.size.width * (_imageView.frame.size.height / image.size.height),
-                                       _imageView.frame.size.height)];
-        [scrollView setContentSize:CGSizeMake(imageView.frame.size.width, _imageView.frame.size.height)];
-        [scrollView addSubview:imageView];
-        [_imageView addSubview:scrollView];
-        /////////////
-        
-        ~total;
-        ~trans;
-        
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
         freq.push_back(3300.0);
         freq.push_back(1500.0);
-        //freq.push_back(2400.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
-        //NSLog(@"FFTstore is %i by %i", result.rows, result.cols);
         Mat demodData = [DemodulationUtils getData:result preRate:3 dataRate:3 dataBits:6];
         
         std::cout << demodData << std::endl;
         
     });
     
-}
-
-- (cv::Mat)getTestImage {
-    cv::Mat total = cv::Mat();
-    
-    for(int i = 0; i < 31; i++)
-    {
-        NSString *path = [NSString stringWithFormat: @"Enlighten/DataSet/2014-03-13-22_27_49_659_pos09_sp04_L1_and_3_off/%02i.TIFF", i];
-        cv::Mat thisImage;
-        thisImage = cv::imread([path UTF8String]);
-        total.push_back(thisImage);
-    }
-    return total;
 }
 
 - (void) imageCapturerDidProcessPreviewFrame:(Mat &)frame {

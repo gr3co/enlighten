@@ -32,9 +32,6 @@ int preambleFrames = 30;
 + (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
 {
     
-    //std::cout << imageRows.t() << std::endl;
-    
-    //NSLog(@"The given image is of size %i by %i", imageRows.rows, imageRows.cols);
     
     // The number of frequencies we are scanning for
     int numFreqs = frequencies.rows;
@@ -46,21 +43,12 @@ int preambleFrames = 30;
     int h = 0;
     for (int i = 0; i < imageRows.rows - Nfft; i+= stepSize) {
         //First get a Mat representing this image
-        //NSLog(@"FFTing on window from %i to %i", i, i+Nfft);
         cv::Mat thisImage = imageRows.rowRange(i, i + Nfft);
         
         int pixel_new = i % Nfft;
         int pixel_old = Nfft - pixel_new;
         cv::Mat hann = [DemodulationUtils getHann:pixel_old];
         hann.push_back([DemodulationUtils getHann:pixel_new]);
-        
-        if (h == 0 || h == 5) {
-            //std::cout << hann.t() << std::endl;
-        }
-        
-        
-        //NSLog(@"Have hann filter of size %i by %i", hann.size().height, hann.size().width);
-        //NSLog(@"Have matrix size %i by %i", thisImage.size().height, thisImage.size().width);
         
         thisImage = thisImage.mul(hann);
         
@@ -82,12 +70,6 @@ int preambleFrames = 30;
         
         cv::normalize(thisFft, thisFft, 0, 255, cv::NORM_MINMAX);
         
-        if (h == 155 || h == 255) {
-            //std::cout << thisFft << std::endl;
-        }
-        
-        //NSLog(@"Size of thisFFt = %i x %i", thisFft.rows, thisFft.cols);
-        
         // Iterate through the target frequencies
         // The output has columns of frequencies, and rows over time
         for (int j = 0; j < numFreqs; j++) {
@@ -100,9 +82,6 @@ int preambleFrames = 30;
         }
         h++;
     }
-    //std::cout << frequencies.t() << std::endl;
-    //std::cout << computedFft.rows << " " << computedFft.cols << std::endl;
-    //std::cout << computedFft << std::endl;
     
     return computedFft;
 }
@@ -118,21 +97,15 @@ int preambleFrames = 30;
     cv::Mat preambleFft = fftOverTime.row(0);
     cv::Mat dataFft = fftOverTime.row(1);
     int numberSamples = dataFft.cols;
-    //NSLog(@"Number of samples is %i", numberSamples);
-    //NSLog(@"Preamble search length is %i", preambleFrames * stepsPerFrame + 1);
+
     cv::Mat preambleContainer =  preambleFft.colRange(0, preambleFrames * stepsPerFrame+1);
 
     cv::Point preamblePoint;
     cv::minMaxLoc(preambleContainer, NULL, NULL, NULL, &preamblePoint);
 
     int preambleIdx = preamblePoint.x;
-    
-    //std::cout << "preamble is located at " << preambleIdx << std::endl;
-
     int jumpPreamble = round((preRate + dataRate) / 2) * stepsPerFrame;
     int jumpData = round(dataRate * stepsPerFrame);
-
-    //NSLog(@"JumpPreamble is %i, jumpData is %i", jumpPreamble, jumpData);
     
     int idxOn = preambleIdx + jumpPreamble;
 
@@ -141,8 +114,6 @@ int preambleFrames = 30;
     
     // This is the threshold to determine whether or not data is 0 or 1
     double threshold = (onVal + offVal) / 2;
-
-    //NSLog(@"Threshold is %f", threshold);
     
     // We take the start of the transfer + sending the pilot on and the data
     int byteLength = jumpPreamble + dataBits * jumpData;
@@ -160,7 +131,6 @@ int preambleFrames = 30;
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
             double signalVal = dataFft.at<double>(0, bitIdx);
             BOOL demodVal = signalVal > threshold;
-            //NSLog(@"Bit %i is detected at %i: %f (%i)", i, bitIdx, signalVal, demodVal);
             demodData.at<BOOL>(0,i-1) = demodVal;
         }
     }
