@@ -225,10 +225,14 @@ using namespace cv;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back(1500.0);
-        freq.push_back(2400.0);
         freq.push_back(3300.0);
+        freq.push_back(1500.0);
+        //freq.push_back(2400.0);
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
+        NSLog(@"FFTstore is %i by %i", result.rows, result.cols);
+        Mat demodData = [DemodulationUtils getData:result preRate:3 dataRate:3 dataBits:6];
+        
+        std::cout << demodData << std::endl;
         
     });
     

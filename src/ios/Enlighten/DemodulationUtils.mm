@@ -117,43 +117,52 @@ int preambleFrames = 30;
 {
     //First we want to find a preamble peak, it should be the 
     cv::Mat preambleFft = fftOverTime.row(0);
-    cv::Mat dataFft = fftOverTime.col(1);
+    cv::Mat dataFft = fftOverTime.row(1);
     int numberSamples = dataFft.cols;
-    cv::Mat preambleContainer =  preambleFft.rowRange(0, preambleFrames * stepsPerFrame+1);
+    NSLog(@"Number of samples is %i", numberSamples);
+    NSLog(@"Preamble search length is %i", preambleFrames * stepsPerFrame + 1);
+    cv::Mat preambleContainer =  preambleFft.colRange(0, preambleFrames * stepsPerFrame+1);
 
-    int preambleIdx;
-    minMaxIdx(preambleContainer, 0, 0, 0, &preambleIdx);
+    cv::Point preamblePoint;
+    cv::minMaxLoc(preambleContainer, NULL, NULL, NULL, &preamblePoint);
 
+    int preambleIdx = preamblePoint.x;
+    
     std::cout << "preamble is located at " << preambleIdx << std::endl;
 
     int jumpPreamble = round((preRate + dataRate) / 2) * stepsPerFrame;
     int jumpData = round(dataRate * stepsPerFrame);
 
+    NSLog(@"JumpPreamble is %i, jumpData is %i", jumpPreamble, jumpData);
+    
     int idxOn = preambleIdx + jumpPreamble;
 
     double offVal = dataFft.at<double>(0,preambleIdx);
     double onVal = dataFft.at<double>(0, idxOn);
-
+    
     // This is the threshold to determine whether or not data is 0 or 1
     double threshold = (onVal + offVal) / 2;
 
+    NSLog(@"Threshold is %f", threshold);
+    
     // We take the start of the transfer + sending the pilot on and the data
     int byteLength = jumpPreamble + dataBits * jumpData;
 
     // Demod data should be an array of single bytes which are 0 or 1
-    cv::Mat demodData = cv::Mat(1, dataBits, CV_8U);
+    cv::Mat demodData = cv::Mat(1, dataBits, CV_8S);
 
     if (preambleIdx + byteLength > numberSamples) {
         // this should handle the error gracefully, this should never happen
         // because if the preamble is detected in the back half of the image,
         // then it didn't actually find a viable preamble.
-        
+        return cv::Mat::ones(1, dataBits, CV_8U);
     } else {
-        for (int i = 1; i < dataBits; i++) {
+        for (int i = 1; i <= dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
             double signalVal = dataFft.at<double>(0, bitIdx);
-            int demodVal = signalVal > threshold;
-            demodData.at<double>(0,i) = demodVal;
+            BOOL demodVal = signalVal > threshold;
+            //NSLog(@"Bit %i is detected at %i: %f (%i)", i, bitIdx, signalVal, demodVal);
+            demodData.at<BOOL>(0,i-1) = demodVal;
         }
     }
     return demodData;
