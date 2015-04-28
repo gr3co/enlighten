@@ -134,6 +134,7 @@ using namespace cv;
     _resultLabel.font = [UIFont fontWithName:@"Arial" size:36];
     [_imageView addSubview:_resultLabel];
     
+    [_captureSession startRunning];
 
 }
 
@@ -149,7 +150,6 @@ using namespace cv;
     
     if (![_captureSession isRunning]) {
         [_captureSession startRunning];
-        return;
     }
     
     isCapturing = YES;
@@ -161,7 +161,7 @@ using namespace cv;
 
 - (void)imageCapturerDidCaptureFrames:(std::vector<Mat>&)frames {
     
-    [_captureSession stopRunning];
+    //[_captureSession stopRunning];
     
     
     /* 
