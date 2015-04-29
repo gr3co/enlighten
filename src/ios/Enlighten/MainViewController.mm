@@ -134,10 +134,10 @@ using namespace cv;
         // Take the average
         for (int i = 0; i < frames->size(); i++) {
             for (int j = 0; j < (*frames)[i].size().height; j++) {
-                avg.push_back((double)mean((*frames)[i].row(i))[0]);
+                avg.push_back((double)mean((*frames)[i].row(j))[0]);
             }
         }
-        
+    
         // Fuck yeah memory management
         frames->clear();
         delete frames;
@@ -162,7 +162,7 @@ using namespace cv;
                                 ? @"ERROR"
                                 : [NSString stringWithFormat:@"%04x", demod];
             std::cout << demodData << std::endl;
-            
+            std::cout << result << std::endl;
         });
     });
     

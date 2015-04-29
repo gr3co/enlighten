@@ -82,7 +82,6 @@ int preambleFrames = 30;
         }
         h++;
     }
-    std::cout << computedFft << std::endl;
     return computedFft;
 }
 
@@ -104,7 +103,8 @@ int preambleFrames = 30;
     cv::minMaxLoc(preambleContainer, NULL, NULL, NULL, &preamblePoint);
 
     int preambleIdx = preamblePoint.x;
-    int jumpPreamble = round((preRate + dataRate) / 2) * stepsPerFrame;
+    std::cout << preambleIdx << std::endl;
+    int jumpPreamble = round((preRate + dataRate) / 2 * stepsPerFrame);
     int jumpData = round(dataRate * stepsPerFrame);
     
     int idxOn = preambleIdx + jumpPreamble;
@@ -130,10 +130,12 @@ int preambleFrames = 30;
         for (int i = 1; i <= dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
             double signalVal = dataFft.at<double>(0, bitIdx);
+            std::cout << bitIdx << " ";
             BOOL demodVal = signalVal > threshold;
             demodData.at<BOOL>(0,i-1) = demodVal;
         }
     }
+    std::cout << std::endl;
     return demodData;
 }
 
