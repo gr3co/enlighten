@@ -82,7 +82,7 @@ int preambleFrames = 30;
         }
         h++;
     }
-    //std::cout << computedFft << std::endl;
+    std::cout << computedFft << std::endl;
     return computedFft;
 }
 

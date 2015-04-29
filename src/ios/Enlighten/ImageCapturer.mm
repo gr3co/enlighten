@@ -13,7 +13,9 @@
 
 using namespace cv;
 
-@implementation ImageCapturer
+@implementation ImageCapturer {
+    BOOL altYes;
+}
 
 - (id) initWithCaptureSession:(AVCaptureSession *)session {
     
@@ -64,7 +66,14 @@ using namespace cv;
     if (_currentFrames->size() >= FRAME_COUNT) {
         // Once we've collected 60 frames, stop recording and send the
         // frames to the delegate in order to process them
-        [_delegate imageCapturerDidCaptureFrames:_currentFrames];
+        if (altYes) {
+            [_delegate imageCapturerDidCaptureFrames:_currentFrames];
+            altYes = NO;
+        } else {
+            altYes = YES;
+            _currentFrames->clear();
+            delete _currentFrames;
+        }
         _currentFrames = new std::vector<Mat>();
     } else {
         // Add the matrix to the current list of matrices
