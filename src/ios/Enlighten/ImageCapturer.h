@@ -17,8 +17,8 @@
 @protocol ImageCapturerDelegate <NSObject>
 
 @required
-- (void) imageCapturerDidProcessPreviewFrame:(cv::Mat&) frame;
-- (void) imageCapturerDidCaptureFrames:(std::vector<cv::Mat>&) frames;
+//- (void) imageCapturerDidProcessPreviewFrame:(cv::Mat&) frame;
+- (void) imageCapturerDidCaptureFrames:(std::vector<cv::Mat>*) frames;
 
 @end
 
@@ -29,9 +29,6 @@
 // just to pass it along in case we want to do something
 // with it in the other classes
 - (id) initWithCaptureSession:(AVCaptureSession*) session;
-
-// Self-explanatory
-- (void) captureFrames;
 
 // NSObjects don't have this function by default so we have
 // to manage our memory ourselves
@@ -44,11 +41,9 @@
 @property AVCaptureVideoDataOutput *output;
 
 // This is just a list of the frames that we're currently capturing
-@property std::vector<cv::Mat> currentFrames;
+@property std::vector<cv::Mat> *currentFrames;
 
 // Self-explanatory
 @property id<ImageCapturerDelegate> delegate;
-
-@property BOOL isRecording;
 
 @end

@@ -29,19 +29,6 @@ using namespace cv;
                                                  blue:7/255.0
                                                 alpha:1.0];
     
-    CGSize frameSize = self.view.frame.size;
-    
-    _button = [[UIButton alloc] initWithFrame:CGRectMake(frameSize.width / 2 - 100,
-                                                         frameSize.height - 100, 200, 50)];
-    [_button setBackgroundColor:[UIColor whiteColor]];
-    [_button setTitle:@"Capture Frames" forState:UIControlStateNormal];
-    [_button setTitle: @"Capture Unavailable" forState:UIControlStateDisabled];
-    
-    // Whenever the button is pressed, we want to call the captureImage method defined below
-    [_button addTarget:self action:@selector(captureImages) forControlEvents:UIControlEventTouchUpInside];
-    [_button setTitleColor: [UIColor blackColor] forState:UIControlStateNormal];
-    
-    
     // Set up the capture session to the default settings for 720p
     _captureSession = [[AVCaptureSession alloc] init];
     _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
@@ -96,9 +83,7 @@ using namespace cv;
                                                 completionHandler:nil];
                     
                     [backCamera unlockForConfiguration];
-                    
-                    //NSLog(@"min %f max %f", backCamera.activeFormat.minISO, backCamera.activeFormat.maxISO);
-                    
+                                        
                 }
             }
         }
@@ -115,24 +100,20 @@ using namespace cv;
         [_captureSession startRunning];
         
     }
-        
-    _imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-    _imageView.contentMode = UIViewContentModeScaleAspectFit;
-    _imageView.userInteractionEnabled = YES;
-    [_imageView addSubview:_button];
-    [self.view addSubview:_imageView];
+    
     
     float width = self.view.frame.size.width;
     float height = self.view.frame.size.height;
     _resultLabel = [[UILabel alloc] initWithFrame:
-                    CGRectMake(0.25 * width,
+                    CGRectMake(0.15 * width,
                                0.5 * height - 50,
-                               0.5*width, 100)];
-    _resultLabel.backgroundColor = [UIColor whiteColor];
-    _resultLabel.textColor = [UIColor redColor];
+                               0.7*width, 100)];
+    _resultLabel.backgroundColor = [UIColor clearColor];
+    _resultLabel.textColor = [UIColor blueColor];
+    _resultLabel.text = @"----";
     _resultLabel.textAlignment = NSTextAlignmentCenter;
-    _resultLabel.font = [UIFont fontWithName:@"Arial" size:36];
-    [_imageView addSubview:_resultLabel];
+    _resultLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
+    [self.view addSubview:_resultLabel];
     
     [_captureSession startRunning];
 
@@ -140,79 +121,31 @@ using namespace cv;
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+    [_capturer didReceiveMemoryWarning];
 }
 
-- (void)captureImages {
+- (void)imageCapturerDidCaptureFrames:(std::vector<Mat>*)frames {
     
-    if (isCapturing) {
-        return;
-    }
-    
-    if (![_captureSession isRunning]) {
-        [_captureSession startRunning];
-    }
-    
-    isCapturing = YES;
-    startTime = [NSDate date];
-    [_capturer captureFrames];
-    // This is just that loading icon, so we have some sort of visual feedback
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-}
-
-- (void)imageCapturerDidCaptureFrames:(std::vector<Mat>&)frames {
-    
-    //[_captureSession stopRunning];
-    
-    
-    /* 
-     * The lines below this simply append the matrices from the vector
-     * together so that we can run some sort of signal processing on them.
-     *
-     * The reason I'm doing combining the frames here and not as we capture
-     * them is that the frames come in asynchronously and we want to make
-     * sure they're in the correct order as much as we can.
-     *
-     * I'm not sure if the amount of time it takes to append the matrices
-     * together is longer than the processing time of a single frame, so we
-     * should wait until we have all of them in what we assume is the correct
-     * order before we combine them in order to run signal processing.
-     */
-    Mat total = Mat();
-    for (int i = 0; i < frames.size(); i++) {
-        total.push_back(frames[i]);
-    }
-    
-    // this can be changed to literally any iterable datatype
-    Mat avg = Mat();
-    
-    // Take the average
-    for (int i = 0; i < total.size().height; i++) {
-        avg.push_back((double)mean(total.row(i))[0]);
-    }
-    
-    // Fuck yeah memory management
-    frames.clear();
-    ~total;
-
-    
-    // The time we are displaying below is from when we press the button
-    // to when the final matrix is created and ready for processing.
-    if (startTime != nil) {
-        NSDate *endTime = [NSDate date];
-        NSTimeInterval elapsed = [endTime timeIntervalSinceDate:startTime];
-        NSLog(@"capture took %.2fms", elapsed * 1000.0);
-        startTime = nil;
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Get rid of the loading icon when the image is displayed
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        isCapturing = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        // this can be changed to literally any iterable datatype
+        Mat avg = Mat();
+        
+        // Take the average
+        for (int i = 0; i < frames->size(); i++) {
+            for (int j = 0; j < (*frames)[i].size().height; j++) {
+                avg.push_back((double)mean((*frames)[i].row(i))[0]);
+            }
+        }
+        
+        // Fuck yeah memory management
+        frames->clear();
+        delete frames;
         
         // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
-        freq.push_back(3300.0);
-        freq.push_back(1500.0);
+        freq.push_back(3300.0); // PREAMBLE
+        freq.push_back(1500.0); // DATA
         Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
         Mat demodData = [DemodulationUtils getData:result
                                            preRate:1.5
@@ -220,9 +153,17 @@ using namespace cv;
                                           dataBits:16];
         
         uint32_t demod = convertToInt(demodData);
-        _resultLabel.text = [NSString stringWithFormat:@"%x", demod];
-        std::cout << demodData << std::endl;
         
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _resultLabel.textColor = (demod == 0)
+                                ? [UIColor redColor]
+                                : [UIColor blueColor];
+            _resultLabel.text = (demod == 0)
+                                ? @"ERROR"
+                                : [NSString stringWithFormat:@"%04x", demod];
+            std::cout << demodData << std::endl;
+            
+        });
     });
     
 }
@@ -233,17 +174,6 @@ uint32_t convertToInt(Mat& data) {
         result |= (data.at<BOOL>(0,i) << i);
     }
     return result;
-}
-
-
-- (void) imageCapturerDidProcessPreviewFrame:(Mat &)frame {
-    transpose(frame, frame);
-    flip(frame, frame, 1);
-    UIImage *image = [OpenCVUtils UIImageFromCvMat:frame];
-    ~frame;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.imageView setImage:image];
-    });
 }
 
 

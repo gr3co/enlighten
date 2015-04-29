@@ -20,11 +20,14 @@ using namespace cv;
     if (self = [super init]) {
         _output = [[AVCaptureVideoDataOutput alloc] init];
         
-        dispatch_queue_t videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue",
+                                                                      DISPATCH_QUEUE_SERIAL);
         [_output setSampleBufferDelegate:self queue:videoDataOutputQueue];
         
         [session addOutput:_output];
         _session = session;
+        
+        _currentFrames = new std::vector<Mat>();
         
     }
     
@@ -58,45 +61,26 @@ using namespace cv;
     // unlock again
     CVPixelBufferUnlockBaseAddress(imgBuf, 0);
     
-    if (_isRecording) {
+    if (_currentFrames->size() >= FRAME_COUNT) {
         // Once we've collected 60 frames, stop recording and send the
         // frames to the delegate in order to process them
-        if (_currentFrames.size() >= FRAME_COUNT) {
-            NSLog(@"stopping capture");
-            _isRecording = NO;
-            [_delegate imageCapturerDidCaptureFrames:_currentFrames];
-            return;
-        }
-        
-        // Add the matrix to the current list of matrices
-        _currentFrames.push_back(image);
-        
-        // logging is always fun
-        if (_currentFrames.size() % 5 == 0) {
-            NSLog(@"captured %d frames", (int)_currentFrames.size());
-        }
+        [_delegate imageCapturerDidCaptureFrames:_currentFrames];
+        _currentFrames = new std::vector<Mat>();
     } else {
-        [_delegate imageCapturerDidProcessPreviewFrame:image];
+        // Add the matrix to the current list of matrices
+        _currentFrames->push_back(image);
+        
+#ifdef LOG_FRAMES
+        // logging is always fun
+        if (_currentFrames->size() % 10 == 0) {
+            NSLog(@"captured %d frames", (int)_currentFrames->size());
+        }
+#endif
     }
-    
-}
-
-// Start capturing frames then send to delegate
-- (void) captureFrames {
-    
-    if (_isRecording) {
-        @throw @"Session already running.";
-    }
-    
-    NSLog(@"starting capture");
-    _currentFrames = std::vector<Mat>();
-    _isRecording = YES;
-    
 }
 
 - (void)didReceiveMemoryWarning {
     // Reset current frames so maybe it'll get garbage collected
-    _currentFrames.clear();
 }
 
 @end
