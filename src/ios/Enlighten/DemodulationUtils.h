@@ -15,7 +15,9 @@
 
 @interface DemodulationUtils : NSObject
 
-+ (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies;
++ (cv::Mat)getFFT:(cv::Mat)imageRows
+withFreq:(cv::Mat)frequencies
+andFrameSize:(int)frameSize;
 
 + (cv::Mat) getData: (cv::Mat)fftOverTime
 preRate: (double)preRate

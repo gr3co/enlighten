@@ -18,6 +18,7 @@ using namespace cv;
 @implementation MainViewController {
     NSDate *startTime;
     BOOL isCapturing;
+    int frameSize;
 }
 
 - (void)viewDidLoad {
@@ -63,10 +64,15 @@ using namespace cv;
             CMFormatDescriptionRef description = format.formatDescription;
             float maxrate = ((AVFrameRateRange*)[format.videoSupportedFrameRateRanges objectAtIndex:0]).maxFrameRate;
             
-            if (maxrate == 60 &&
-                CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange){
+            if (maxrate == 60
+                && CMFormatDescriptionGetMediaSubType(description) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                && format.highResolutionStillImageDimensions.height >= 480){
                 if ([backCamera lockForConfiguration:NULL]) {
+                    
                     backCamera.activeFormat = format;
+                    
+                    // Either going to be 480 or 1080, depending on my phone or Darrin's phone
+                    frameSize = min(format.highResolutionStillImageDimensions.height, 1080);
                     
                     // Set the camera to always use 60fps if available
                     [backCamera setActiveVideoMinFrameDuration:CMTimeMake(1,60)];
@@ -137,22 +143,24 @@ using namespace cv;
                 avg.push_back((double)mean((*frames)[i].row(j))[0]);
             }
         }
-    
+        
         // Fuck yeah memory management
         frames->clear();
         delete frames;
         
-        // DO SOMETHING WITH THE AVERAGE VALUE ARRAY
         Mat freq = Mat();
         freq.push_back(3300.0); // PREAMBLE
         freq.push_back(1500.0); // DATA
-        Mat result = [DemodulationUtils getFFT:avg withFreq:freq];
-        Mat demodData = [DemodulationUtils getData:result
+        Mat fftData = [DemodulationUtils getFFT:avg
+                                      withFreq:freq
+                                  andFrameSize:frameSize];
+        
+        Mat result = [DemodulationUtils getData:fftData
                                            preRate:1.5
                                           dataRate:1.5
                                           dataBits:16];
         
-        uint32_t demod = convertToInt(demodData);
+        uint32_t demod = convertToInt(result);
         
         dispatch_async(dispatch_get_main_queue(), ^{
             _resultLabel.textColor = (demod == 0)
@@ -161,8 +169,8 @@ using namespace cv;
             _resultLabel.text = (demod == 0)
                                 ? @"ERROR"
                                 : [NSString stringWithFormat:@"%04x", demod];
-            std::cout << demodData << std::endl;
             std::cout << result << std::endl;
+            //std::cout << fftData << std::endl;
         });
     });
     

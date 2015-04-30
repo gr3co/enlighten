@@ -8,13 +8,12 @@
 
 #import "DemodulationUtils.h"
 
-// This should be the same size as a single image height
-int Nfft = 1080;
 // This is how far apart our samples are for each sample
-int stepsPerFrame = 10;
-int stepSize = Nfft / stepsPerFrame;
+#define STEPS_PER_FRAME 10
+
 // This is how many frames could go by before we are sure to see the preamble
-int preambleFrames = 30;
+#define PREAMBLE_FRAMES 30
+
 
 @implementation DemodulationUtils
 
@@ -29,24 +28,26 @@ int preambleFrames = 30;
     return window;
 }
 
-+ (cv::Mat)getFFT:(cv::Mat)imageRows withFreq:(cv::Mat)frequencies
++ (cv::Mat)getFFT:(cv::Mat)imageRows
+withFreq:(cv::Mat)frequencies
+andFrameSize:(int)frameSize
 {
-    
     
     // The number of frequencies we are scanning for
     int numFreqs = frequencies.rows;
     
-    //int endVal = (numFrames - 1) * imageRows.rows;
+    int stepSize = frameSize / STEPS_PER_FRAME;
+    
     int numWindows = imageRows.rows / stepSize;
     cv::Mat computedFft = cv::Mat(numFreqs, numWindows, CV_64F);
     
     int h = 0;
-    for (int i = 0; i < imageRows.rows - Nfft; i+= stepSize) {
+    for (int i = 0; i < imageRows.rows - frameSize; i+= stepSize) {
         //First get a Mat representing this image
-        cv::Mat thisImage = imageRows.rowRange(i, i + Nfft);
+        cv::Mat thisImage = imageRows.rowRange(i, i + frameSize);
         
-        int pixel_new = i % Nfft;
-        int pixel_old = Nfft - pixel_new;
+        int pixel_new = i % frameSize;
+        int pixel_old = frameSize - pixel_new;
         cv::Mat hann = [DemodulationUtils getHann:pixel_old];
         hann.push_back([DemodulationUtils getHann:pixel_new]);
         
@@ -56,7 +57,8 @@ int preambleFrames = 30;
         cv::Mat padded;                            //expand input image to optimal size
         int m = cv::getOptimalDFTSize( thisImage.rows );
         int n = cv::getOptimalDFTSize( thisImage.cols ); // on the border add zero values
-        cv::copyMakeBorder(thisImage, padded, 0, m - thisImage.rows, 0, n - thisImage.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
+        cv::copyMakeBorder(thisImage, padded, 0, m - thisImage.rows,
+                           0, n - thisImage.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
         
         cv::Mat planes[] = {cv::Mat_<double>(padded), cv::Mat::zeros(padded.size(), CV_64F)};
         cv::Mat complexI;
@@ -97,23 +99,24 @@ int preambleFrames = 30;
     cv::Mat dataFft = fftOverTime.row(1);
     int numberSamples = dataFft.cols;
 
-    cv::Mat preambleContainer =  preambleFft.colRange(0, preambleFrames * stepsPerFrame+1);
+    cv::Mat preambleContainer =  preambleFft.colRange(0, PREAMBLE_FRAMES * STEPS_PER_FRAME+1);
 
     cv::Point preamblePoint;
     cv::minMaxLoc(preambleContainer, NULL, NULL, NULL, &preamblePoint);
 
     int preambleIdx = preamblePoint.x;
-    std::cout << preambleIdx << std::endl;
-    int jumpPreamble = round((preRate + dataRate) / 2 * stepsPerFrame);
-    int jumpData = round(dataRate * stepsPerFrame);
+    int jumpPreamble = round((preRate + dataRate) / 2 * STEPS_PER_FRAME);
+    int jumpData = round(dataRate * STEPS_PER_FRAME);
     
     int idxOn = preambleIdx + jumpPreamble;
 
-    double offVal = dataFft.at<double>(0,preambleIdx);
+    double offVal = dataFft.at<double>(0,idxOn + jumpData);
     double onVal = dataFft.at<double>(0, idxOn);
     
     // This is the threshold to determine whether or not data is 0 or 1
     double threshold = (onVal + offVal) / 2;
+    
+    //std::cout << preambleIdx << " " << threshold << std::endl;
     
     // We take the start of the transfer + sending the pilot on and the data
     int byteLength = jumpPreamble + dataBits * jumpData;
@@ -125,17 +128,17 @@ int preambleFrames = 30;
         // this should handle the error gracefully, this should never happen
         // because if the preamble is detected in the back half of the image,
         // then it didn't actually find a viable preamble.
-        return cv::Mat::ones(1, dataBits, CV_8U);
+        return cv::Mat::zeros(1, dataBits, CV_8U);
     } else {
         for (int i = 1; i <= dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
             double signalVal = dataFft.at<double>(0, bitIdx);
-            std::cout << bitIdx << " ";
+            //std::cout << bitIdx << " ";
             BOOL demodVal = signalVal > threshold;
             demodData.at<BOOL>(0,i-1) = demodVal;
         }
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
     return demodData;
 }
 
