@@ -17,7 +17,8 @@
 @property UIButton *button;
 @property ImageCapturer *capturer;
 @property UIImageView *imageView;
-@property UILabel *resultLabel;
+@property UILabel *resultLabel1;
+@property UILabel *resultLabel2;
 
 @end
 

@@ -15,6 +15,8 @@
 #define PREAMBLE_FRAMES 30
 
 
+// #define DEBUG1
+
 @implementation DemodulationUtils
 
 + (cv::Mat)getHann:(int)n
@@ -110,13 +112,16 @@ andFrameSize:(int)frameSize
     
     int idxOn = preambleIdx + jumpPreamble;
 
-    double offVal = dataFft.at<double>(0,idxOn + jumpData);
-    double onVal = dataFft.at<double>(0, idxOn);
+    //double offVal = dataFft.at<double>(0, preambleIdx);
+    double onVal;
+    cv::minMaxLoc(dataFft.colRange(idxOn - 3, idxOn + 3), NULL, &onVal);
     
     // This is the threshold to determine whether or not data is 0 or 1
-    double threshold = (onVal + offVal) / 2;
+    double threshold = 0.9 * onVal; //(onVal + offVal) / 2;
     
-    //std::cout << preambleIdx << " " << threshold << std::endl;
+#ifdef DEBUG1
+    std::cout << preambleIdx << " " << threshold << std::endl;
+#endif
     
     // We take the start of the transfer + sending the pilot on and the data
     int byteLength = jumpPreamble + dataBits * jumpData;
@@ -132,13 +137,19 @@ andFrameSize:(int)frameSize
     } else {
         for (int i = 1; i <= dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
-            double signalVal = dataFft.at<double>(0, bitIdx);
-            //std::cout << bitIdx << " ";
+            //double signalVal = dataFft.at<double>(0, bitIdx);
+            double signalVal;
+            cv::minMaxLoc(dataFft.colRange(bitIdx - 3, bitIdx + 3), NULL, &signalVal);
+#ifdef DEBUG1
+            std::cout << bitIdx << " ";
+#endif
             BOOL demodVal = signalVal > threshold;
             demodData.at<BOOL>(0,i-1) = demodVal;
         }
     }
-    //std::cout << std::endl;
+#ifdef DEBUG1
+    std::cout << std::endl;
+#endif
     return demodData;
 }
 
