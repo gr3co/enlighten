@@ -125,7 +125,7 @@ using namespace cv;
                                0.7*width, 100)];
     _resultLabel1.backgroundColor = [UIColor clearColor];
     _resultLabel1.textColor = [UIColor redColor];
-    _resultLabel1.text = @"--";
+    _resultLabel1.text = @"----";
     _resultLabel1.textAlignment = NSTextAlignmentCenter;
     _resultLabel1.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
     [self.view addSubview:_resultLabel1];
@@ -136,7 +136,7 @@ using namespace cv;
                                 0.7*width, 100)];
     _resultLabel2.backgroundColor = [UIColor clearColor];
     _resultLabel2.textColor = [UIColor redColor];
-    _resultLabel2.text = @"--";
+    _resultLabel2.text = @"----";
     _resultLabel2.textAlignment = NSTextAlignmentCenter;
     _resultLabel2.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
     [self.view addSubview:_resultLabel2];
@@ -200,19 +200,19 @@ using namespace cv;
                                 ? [UIColor redColor]
                                 : [UIColor blueColor];
             _resultLabel1.text = error1
-                                ? @"--"
-                                : [NSString stringWithFormat:@"%02x", demod1 & 0xff];
+                                ? @"----"
+                                : [NSString stringWithFormat:@"0x%02X", demod1 & 0xff];
 #ifdef TWOVALUES
             _resultLabel2.textColor = error2
                                 ? [UIColor redColor]
                                 : [UIColor greenColor];
             _resultLabel2.text = error2
-                                ? @"--"
-                                : [NSString stringWithFormat:@"%02x", demod2 & 0xff];
+                                ? @"----"
+                                : [NSString stringWithFormat:@"0x%02X", demod2 & 0xff];
 #endif
             std::cout << result1 << std::endl;
             std::cout << result2 << std::endl;
-            //std::cout << fftData << std::endl;
+            std::cout << fftData << std::endl;
         });
     });
     

@@ -15,7 +15,7 @@
 #define PREAMBLE_FRAMES 30
 
 
-// #define DEBUG1
+#define DEBUG1
 
 @implementation DemodulationUtils
 
