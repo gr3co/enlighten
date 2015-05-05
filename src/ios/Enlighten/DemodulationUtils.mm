@@ -15,7 +15,7 @@
 #define PREAMBLE_FRAMES 30
 
 
-#define DEBUG1
+//#define DEBUG1
 
 @implementation DemodulationUtils
 
@@ -111,8 +111,7 @@ andFrameSize:(int)frameSize
     int jumpData = round(dataRate * STEPS_PER_FRAME);
     
     int idxOn = preambleIdx + jumpPreamble;
-
-    //double offVal = dataFft.at<double>(0, preambleIdx);
+    
     double onVal;
     cv::minMaxLoc(dataFft.colRange(idxOn - 3, idxOn + 3), NULL, &onVal);
     
@@ -137,11 +136,10 @@ andFrameSize:(int)frameSize
     } else {
         for (int i = 1; i <= dataBits; i++) {
             int bitIdx = preambleIdx + jumpPreamble + i * jumpData;
-            //double signalVal = dataFft.at<double>(0, bitIdx);
             double signalVal;
-            cv::minMaxLoc(dataFft.colRange(bitIdx - 3, bitIdx + 3), NULL, &signalVal);
+            cv::minMaxLoc(dataFft.colRange(bitIdx - 5, bitIdx + 5), NULL, &signalVal);
 #ifdef DEBUG1
-            std::cout << bitIdx << " ";
+            std::cout << bitIdx + 1 << " ";
 #endif
             BOOL demodVal = signalVal > threshold;
             demodData.at<BOOL>(0,i-1) = demodVal;

@@ -20,7 +20,12 @@
 #define PREAMBLE1 1800.0
 #define PREAMBLE2 2600.0
 
-#define TWOVALUES
+#define PREAMBLE_FRAMES 1.0
+#define DATA_FRAMES 1.5
+#define DATA_BITS 16
+
+#define BULB1
+#define BULB2
 
 using namespace cv;
 
@@ -28,6 +33,8 @@ using namespace cv;
     NSDate *startTime;
     BOOL isCapturing;
     int frameSize;
+    int pass;
+    int total;
 }
 
 - (void)viewDidLoad {
@@ -119,6 +126,7 @@ using namespace cv;
     
     float width = self.view.frame.size.width;
     float height = self.view.frame.size.height;
+#ifdef BULB1
     _resultLabel1 = [[UILabel alloc] initWithFrame:
                     CGRectMake(0.15 * width,
                                0.5 * height - 100,
@@ -129,7 +137,8 @@ using namespace cv;
     _resultLabel1.textAlignment = NSTextAlignmentCenter;
     _resultLabel1.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
     [self.view addSubview:_resultLabel1];
-#ifdef TWOVALUES
+#endif
+#ifdef BULB2
     _resultLabel2 = [[UILabel alloc] initWithFrame:
                      CGRectMake(0.15 * width,
                                 0.5 * height,
@@ -169,50 +178,57 @@ using namespace cv;
         delete frames;
         
         Mat freq = Mat();
+#ifdef BULB1
         freq.push_back(PREAMBLE1);
         freq.push_back(DATA1);
-#ifdef TWOVALUES
+#endif
+#ifdef BULB2
         freq.push_back(PREAMBLE2);
         freq.push_back(DATA2);
 #endif
         Mat fftData = [DemodulationUtils getFFT:avg
                                       withFreq:freq
                                   andFrameSize:frameSize];
-        
+#ifdef BULB1
         Mat result1 = [DemodulationUtils getData:fftData.rowRange(0, 2)
-                                           preRate:1.5
-                                          dataRate:1.5
-                                          dataBits:16];
+                                           preRate:PREAMBLE_FRAMES
+                                          dataRate:DATA_FRAMES
+                                          dataBits:DATA_BITS];
         uint16_t demod1 = convertToInt(result1);
         BOOL error1 = demod1 == 0 || (0xff != (((demod1 >> 8) & 0xff) ^ (demod1 & 0xff)));
-        
-#ifdef TWOVALUES
+#endif
+#ifdef BULB2
         Mat result2 = [DemodulationUtils getData:fftData.rowRange(2, 4)
-                                        preRate:1.5
-                                       dataRate:1.5
-                                       dataBits:16];
+                                        preRate:PREAMBLE_FRAMES
+                                       dataRate:DATA_FRAMES
+                                       dataBits:DATA_BITS];
         uint16_t demod2 = convertToInt(result2);
         BOOL error2 = demod2 == 0 || (0xff != (((demod2 >> 8) & 0xff) ^ (demod2 & 0xff)));
 #endif
         
         dispatch_async(dispatch_get_main_queue(), ^{
+#ifdef BULB1
             _resultLabel1.textColor = error1
                                 ? [UIColor redColor]
                                 : [UIColor blueColor];
             _resultLabel1.text = error1
                                 ? @"----"
                                 : [NSString stringWithFormat:@"0x%02X", demod1 & 0xff];
-#ifdef TWOVALUES
+#endif
+#ifdef BULB2
             _resultLabel2.textColor = error2
                                 ? [UIColor redColor]
                                 : [UIColor greenColor];
             _resultLabel2.text = error2
                                 ? @"----"
                                 : [NSString stringWithFormat:@"0x%02X", demod2 & 0xff];
+            //total += 1;
+            //pass += ((demod2 & 0xff) == 0xCD);
+            //std::cout << (float)(pass) / (float)(total) << std::endl;
 #endif
-            std::cout << result1 << std::endl;
-            std::cout << result2 << std::endl;
-            std::cout << fftData << std::endl;
+            //std::cout << result1 << std::endl;
+            //std::cout << result2 << std::endl;
+            //std::cout << fftData << std::endl;
         });
     });
     
