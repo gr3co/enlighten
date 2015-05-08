@@ -10,6 +10,7 @@
 
 static NSString *page_1_url = @"http://en.m.wikipedia.org/wiki/Mona_lisa";
 static NSString *page_2_url = @"http://en.m.wikipedia.org/wiki/Yellowstone_National_Park";
+static NSString *page_3_url = @"http://www.ece.cmu.edu/~ece549/spring15/team10/website";
 static NSString *rick_roll_url = @"https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 @implementation ResultView
@@ -44,8 +45,8 @@ static NSString *rick_roll_url = @"https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 - (void) setupInfoView {
     float width = self.frame.size.width;
     _infoView = [[UILabel alloc] initWithFrame:
-                   CGRectMake(0.15 * width,
-                              0, 0.7*width, 100)];
+                   CGRectMake(0.1 * width,
+                              0, 0.8*width, 100)];
     _infoView.backgroundColor = [UIColor clearColor];
     _infoView.textColor = [UIColor blueColor];
     _infoView.text = [NSString stringWithFormat: @"Found code: 0x%02X", _result];
@@ -63,6 +64,7 @@ static NSString *rick_roll_url = @"https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     switch (_result) {
         case 0xab: url = [NSURL URLWithString:page_1_url]; break;
         case 0xcd: url = [NSURL URLWithString:page_2_url]; break;
+        case 0xef: url = [NSURL URLWithString:page_3_url]; break;
         default: url = [NSURL URLWithString:rick_roll_url];
     }
     [self addSubview:_webView];

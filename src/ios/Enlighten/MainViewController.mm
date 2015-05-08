@@ -126,20 +126,20 @@ using namespace cv;
     float height = self.view.frame.size.height;
     _titleLabel = [[UILabel alloc] initWithFrame:
                     CGRectMake(0.15 * width,
-                               150,
+                               100,
                                0.7*width, 100)];
     _titleLabel.backgroundColor = [UIColor clearColor];
     _titleLabel.textColor = [UIColor blackColor];
     _titleLabel.text = @"Welcome to Enlighten\u2122";
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.numberOfLines = 0;
-    _titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:40];
+    _titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:36];
     [self.view addSubview:_titleLabel];
     
     _instructionsLabel = [[UILabel alloc] initWithFrame:
                           CGRectMake(0.15 * width,
-                                     height - 350,
-                                     0.7*width, 300)];
+                                     height - 280,
+                                     0.7*width, 270)];
     _instructionsLabel.backgroundColor = [UIColor clearColor];
     _instructionsLabel.textColor = [UIColor redColor];
     _instructionsLabel.text = @"Please point your camera at an Enlightened\u2122 work of art"
