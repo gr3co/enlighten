@@ -88,8 +88,8 @@ using namespace cv;
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    // Reset current frames so maybe it'll get garbage collected
+- (void) reset {
+    _currentFrames->clear();
 }
 
 @end

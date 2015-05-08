@@ -33,8 +33,7 @@ using namespace cv;
     NSDate *startTime;
     BOOL isCapturing;
     int frameSize;
-    int pass;
-    int total;
+    MBProgressHUD *hud;
 }
 
 - (void)viewDidLoad {
@@ -66,7 +65,6 @@ using namespace cv;
                                    delegate:nil
                           cancelButtonTitle:@"OK"
                           otherButtonTitles:nil]show];
-        [_button setEnabled: NO];
     } else {
         
         // Tell the capture session that we want to use the back camera
@@ -126,37 +124,36 @@ using namespace cv;
     
     float width = self.view.frame.size.width;
     float height = self.view.frame.size.height;
-#ifdef BULB1
-    _resultLabel1 = [[UILabel alloc] initWithFrame:
+    _titleLabel = [[UILabel alloc] initWithFrame:
                     CGRectMake(0.15 * width,
-                               0.5 * height - 100,
+                               150,
                                0.7*width, 100)];
-    _resultLabel1.backgroundColor = [UIColor clearColor];
-    _resultLabel1.textColor = [UIColor redColor];
-    _resultLabel1.text = @"----";
-    _resultLabel1.textAlignment = NSTextAlignmentCenter;
-    _resultLabel1.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
-    [self.view addSubview:_resultLabel1];
-#endif
-#ifdef BULB2
-    _resultLabel2 = [[UILabel alloc] initWithFrame:
-                     CGRectMake(0.15 * width,
-                                0.5 * height,
-                                0.7*width, 100)];
-    _resultLabel2.backgroundColor = [UIColor clearColor];
-    _resultLabel2.textColor = [UIColor redColor];
-    _resultLabel2.text = @"----";
-    _resultLabel2.textAlignment = NSTextAlignmentCenter;
-    _resultLabel2.font = [UIFont fontWithName:@"Menlo-Bold" size:64];
-    [self.view addSubview:_resultLabel2];
-#endif
+    _titleLabel.backgroundColor = [UIColor clearColor];
+    _titleLabel.textColor = [UIColor blackColor];
+    _titleLabel.text = @"Welcome to Enlighten\u2122";
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.numberOfLines = 0;
+    _titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:40];
+    [self.view addSubview:_titleLabel];
+    
+    _instructionsLabel = [[UILabel alloc] initWithFrame:
+                          CGRectMake(0.15 * width,
+                                     height - 350,
+                                     0.7*width, 300)];
+    _instructionsLabel.backgroundColor = [UIColor clearColor];
+    _instructionsLabel.textColor = [UIColor redColor];
+    _instructionsLabel.text = @"Please point your camera at an Enlightened\u2122 work of art"
+                                " and we'll take it from here!";
+    _instructionsLabel.numberOfLines = 0;
+    _instructionsLabel.textAlignment = NSTextAlignmentCenter;
+    _instructionsLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:24];
+    [self.view addSubview:_instructionsLabel];
+    
+    
     [_captureSession startRunning];
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"scanning..";
 
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    [_capturer didReceiveMemoryWarning];
 }
 
 - (void)imageCapturerDidCaptureFrames:(std::vector<Mat>*)frames {
@@ -196,6 +193,7 @@ using namespace cv;
                                           dataBits:DATA_BITS];
         uint16_t demod1 = convertToInt(result1);
         BOOL error1 = demod1 == 0 || (0xff != (((demod1 >> 8) & 0xff) ^ (demod1 & 0xff)));
+        demod1 &= 0xff;
 #endif
 #ifdef BULB2
         Mat result2 = [DemodulationUtils getData:fftData.rowRange(2, 4)
@@ -204,34 +202,34 @@ using namespace cv;
                                        dataBits:DATA_BITS];
         uint16_t demod2 = convertToInt(result2);
         BOOL error2 = demod2 == 0 || (0xff != (((demod2 >> 8) & 0xff) ^ (demod2 & 0xff)));
+        demod2 &= 0xff;
 #endif
         
         dispatch_async(dispatch_get_main_queue(), ^{
-#ifdef BULB1
-            _resultLabel1.textColor = error1
-                                ? [UIColor redColor]
-                                : [UIColor blueColor];
-            _resultLabel1.text = error1
-                                ? @"----"
-                                : [NSString stringWithFormat:@"0x%02X", demod1 & 0xff];
-#endif
-#ifdef BULB2
-            _resultLabel2.textColor = error2
-                                ? [UIColor redColor]
-                                : [UIColor greenColor];
-            _resultLabel2.text = error2
-                                ? @"----"
-                                : [NSString stringWithFormat:@"0x%02X", demod2 & 0xff];
-            //total += 1;
-            //pass += ((demod2 & 0xff) == 0xCD);
-            //std::cout << (float)(pass) / (float)(total) << std::endl;
-#endif
-            //std::cout << result1 << std::endl;
-            //std::cout << result2 << std::endl;
-            //std::cout << fftData << std::endl;
+            int finalResult = (!error1) ? demod1 : (!error2) ? demod2 : 0;
+            [self processResult:finalResult];
         });
     });
     
+}
+
+- (void) processResult:(int)result {
+    if (result != 0) {
+        [_captureSession stopRunning];
+        hud.labelText = @"loading..";
+        ResultView *resultView = [[ResultView alloc] initWithFrame:self.view.frame
+                                                            result:result
+                                                       andDelegate:self];
+        [self.view addSubview:resultView];
+    }
+}
+
+- (void) resultViewDidClose:(UIView *)view {
+    NSLog(@"closed");
+    [_capturer reset];
+    [_captureSession startRunning];
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"scanning..";
 }
 
 uint16_t convertToInt(Mat& data) {

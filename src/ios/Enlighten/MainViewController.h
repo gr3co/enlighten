@@ -9,16 +9,16 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ImageCapturer.h"
+#import "ResultView.h"
 
-@interface MainViewController : UIViewController <ImageCapturerDelegate, UIScrollViewDelegate>
+@interface MainViewController : UIViewController <ImageCapturerDelegate,
+UIScrollViewDelegate, ResultViewDelegate>
 
 @property (nonatomic, retain) AVCaptureSession *captureSession;
 
-@property UIButton *button;
 @property ImageCapturer *capturer;
-@property UIImageView *imageView;
-@property UILabel *resultLabel1;
-@property UILabel *resultLabel2;
+@property UILabel *titleLabel;
+@property UILabel *instructionsLabel;
 
 @end
 

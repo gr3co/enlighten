@@ -16,6 +16,7 @@
 		A8AF7B311A8D6D48008DF892 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B301A8D6D48008DF892 /* main.m */; };
 		A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF7B331A8D6D48008DF892 /* AppDelegate.m */; };
 		A8AF7B3C1A8D6D48008DF892 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */; };
+		A8F9DAC81AFC493500E697D3 /* ResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A8F9DAC71AFC493500E697D3 /* ResultView.m */; };
 		D34A45EC1ADC1D8E007CD4AB /* DataSet in Resources */ = {isa = PBXBuildFile; fileRef = D34A45EB1ADC1D8C007CD4AB /* DataSet */; };
 		D396B79F1AC907C400432734 /* DemodulationUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D396B79E1AC907C400432734 /* DemodulationUtils.mm */; };
 /* End PBXBuildFile section */
@@ -41,6 +42,8 @@
 		A8AF7B331A8D6D48008DF892 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A8AF7B351A8D6D48008DF892 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		A8F9DAC61AFC493500E697D3 /* ResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultView.h; sourceTree = "<group>"; };
+		A8F9DAC71AFC493500E697D3 /* ResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultView.m; sourceTree = "<group>"; };
 		D34A45EB1ADC1D8C007CD4AB /* DataSet */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataSet; sourceTree = "<group>"; };
 		D396B79E1AC907C400432734 /* DemodulationUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DemodulationUtils.mm; sourceTree = "<group>"; };
 		D396B7A01AC907DE00432734 /* DemodulationUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemodulationUtils.h; sourceTree = "<group>"; };
@@ -105,9 +108,9 @@
 			children = (
 				A8AF7B321A8D6D48008DF892 /* AppDelegate.h */,
 				A8AF7B331A8D6D48008DF892 /* AppDelegate.m */,
+				D34A45EB1ADC1D8C007CD4AB /* DataSet */,
 				D396B7A01AC907DE00432734 /* DemodulationUtils.h */,
 				D396B79E1AC907C400432734 /* DemodulationUtils.mm */,
-				D34A45EB1ADC1D8C007CD4AB /* DataSet */,
 				A88E8C181AA90ED5009D53F8 /* ImageCapturer.h */,
 				A88E8C1B1AA911B6009D53F8 /* ImageCapturer.mm */,
 				A8AF7B3B1A8D6D48008DF892 /* Images.xcassets */,
@@ -115,6 +118,8 @@
 				A8AE261F1AA50354004E27A1 /* MainViewController.mm */,
 				A8AE26211AA505CD004E27A1 /* OpenCVUtils.h */,
 				A8AE26241AA506A1004E27A1 /* OpenCVUtils.mm */,
+				A8F9DAC61AFC493500E697D3 /* ResultView.h */,
+				A8F9DAC71AFC493500E697D3 /* ResultView.m */,
 				A8AF7B2E1A8D6D48008DF892 /* Supporting Files */,
 			);
 			path = Enlighten;
@@ -235,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D396B79F1AC907C400432734 /* DemodulationUtils.mm in Sources */,
+				A8F9DAC81AFC493500E697D3 /* ResultView.m in Sources */,
 				A8AF7B341A8D6D48008DF892 /* AppDelegate.m in Sources */,
 				A8AE26201AA50354004E27A1 /* MainViewController.mm in Sources */,
 				A8AE26251AA506A1004E27A1 /* OpenCVUtils.mm in Sources */,

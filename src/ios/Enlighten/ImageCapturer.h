@@ -30,9 +30,7 @@
 // with it in the other classes
 - (id) initWithCaptureSession:(AVCaptureSession*) session;
 
-// NSObjects don't have this function by default so we have
-// to manage our memory ourselves
-- (void)didReceiveMemoryWarning;
+- (void)reset;
 
 // The capture session that was set up by the viewController
 @property AVCaptureSession *session;
