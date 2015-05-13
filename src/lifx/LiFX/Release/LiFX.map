@@ -1,0 +1,208 @@
+******************************************************************************
+                  TI ARM Linker PC v5.2.2                      
+******************************************************************************
+>> Linked Thu Apr 02 23:18:00 2015
+
+OUTPUT FILE NAME:   <LiFX.out>
+ENTRY POINT SYMBOL: "ResetISR"  address: 002002f1
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  FLASH                 00200000   0007ffd4  000004b2  0007fb22  R  X
+  FLASH_CCA             0027ffd4   0000000c  0000000c  00000000  R  X
+  SRAM_NON_RETENTION    20000000   00004000  00000000  00004000  RW X
+  SRAM_RETENTION        20004000   00004000  00000114  00003eec  RW X
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00200000    00200000    000004b8   000004b8    r-x
+  00200000    00200000    00000100   00000100    r-- .intvecs
+  00200100    00200100    00000392   00000392    r-x .text
+  00200498    00200498    00000020   00000020    r-- .cinit
+0027ffd4    0027ffd4    0000000c   0000000c    r--
+  0027ffd4    0027ffd4    0000000c   0000000c    r-- .flashcca
+20004000    20004000    00000014   00000000    rw-
+  20004000    20004000    00000014   00000000    rw- .data
+20007f00    20007f00    00000100   00000000    rw-
+  20007f00    20007f00    00000100   00000000    rw- .stack
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.intvecs   0    00200000    00000100     
+                  00200000    00000100     cx2538_startup_ccs.obj (.intvecs)
+
+.text      0    00200100    00000392     
+                  00200100    0000009c     rtsv7M3_T_le_eabi.lib : memcpy_t2.obj (.text)
+                  0020019c    0000007a                           : memset_t2.obj (.text)
+                  00200216    00000002     cx2538_startup_ccs.obj (.text:FaultISR)
+                  00200218    0000006c     rtsv7M3_T_le_eabi.lib : autoinit.obj (.text)
+                  00200284    0000006a                           : copy_decompress_rle.obj (.text)
+                  002002ee    00000002     cx2538_startup_ccs.obj (.text:IntDefaultHandler)
+                  002002f0    00000050     cx2538_startup_ccs.obj (.text:ResetISR)
+                  00200340    0000004c     rtsv7M3_T_le_eabi.lib : cpy_tbl.obj (.text)
+                  0020038c    00000044                           : exit.obj (.text)
+                  002003d0    0000003c                           : boot.obj (.text)
+                  0020040c    00000034     blinky.obj (.text:main)
+                  00200440    00000018     rtsv7M3_T_le_eabi.lib : args_main.obj (.text)
+                  00200458    00000014                           : _lock.obj (.text)
+                  0020046c    0000000e                           : copy_decompress_none.obj (.text:decompress:none)
+                  0020047a    0000000c     blinky.obj (.text:digitalOutputToggle)
+                  00200486    00000006     rtsv7M3_T_le_eabi.lib : copy_decompress_rle.obj (.text:decompress:rle24)
+                  0020048c    00000004                           : pre_init.obj (.text)
+                  00200490    00000002     cx2538_startup_ccs.obj (.text:NmiSR)
+
+.cinit     0    00200498    00000020     
+                  00200498    00000010     (.cinit..data.load) [load image, compression = rle]
+                  002004a8    00000008     (__TI_handler_table)
+                  002004b0    00000008     (__TI_cinit_table)
+
+.init_array 
+*          0    00200000    00000000     UNINITIALIZED
+
+.flashcca 
+*          0    0027ffd4    0000000c     
+                  0027ffd4    0000000c     cx2538_setup.obj (.flashcca:retain)
+
+.data      0    20004000    00000014     UNINITIALIZED
+                  20004000    00000008     rtsv7M3_T_le_eabi.lib : _lock.obj (.data)
+                  20004008    00000008                           : exit.obj (.data)
+                  20004010    00000004                           : stkdepth_vars.obj (.data)
+
+.TI.persistent 
+*          0    20004000    00000000     UNINITIALIZED
+
+.stack     0    20007f00    00000100     UNINITIALIZED
+                  20007f00    00000100     --HOLE--
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 002004b0 records: 1, size/record: 8, table size: 8
+	.data: load addr=00200498, load size=00000010 bytes, run addr=20004000, run size=00000014 bytes, compression=rle
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 002004a8 records: 2, size/record: 4, table size: 8
+	index: 0, handler: __TI_decompress_rle24
+	index: 1, handler: __TI_decompress_none
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                    
+-------   ----                    
+0020038d  C$$EXIT                 
+002002f1  ResetISR                
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+20008000  __STACK_END             
+00000100  __STACK_SIZE            
+20008000  __STACK_TOP             
+002004b0  __TI_CINIT_Base         
+002004b8  __TI_CINIT_Limit        
+002004a8  __TI_Handler_Table_Base 
+002004b0  __TI_Handler_Table_Limit
+00200219  __TI_auto_init          
+20004008  __TI_cleanup_ptr        
+0020046d  __TI_decompress_none    
+00200487  __TI_decompress_rle24   
+2000400c  __TI_dtors_ptr          
+00200498  __TI_static_base__      
+0020019d  __aeabi_memclr          
+0020019d  __aeabi_memclr4         
+0020019d  __aeabi_memclr8         
+00200101  __aeabi_memcpy          
+00200101  __aeabi_memcpy4         
+00200101  __aeabi_memcpy8         
+0020019f  __aeabi_memset          
+0020019f  __aeabi_memset4         
+0020019f  __aeabi_memset8         
+ffffffff  __binit__               
+ffffffff  __c_args__              
+0027ffd4  __cca                   
+20007f00  __stack                 
+00200441  _args_main              
+002003d1  _c_int00                
+20004000  _lock                   
+00200467  _nop                    
+0020045f  _register_lock          
+00200459  _register_unlock        
+0020048d  _system_pre_init        
+20004004  _unlock                 
+00200391  abort                   
+ffffffff  binit                   
+00200341  copy_in                 
+0020047b  digitalOutputToggle     
+00200399  exit                    
+00200000  g_pfnVectors            
+0020040d  main                    
+20004010  main_func_sp            
+00200101  memcpy                  
+002001a5  memset                  
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                    
+-------   ----                    
+00000100  __STACK_SIZE            
+00200000  g_pfnVectors            
+00200101  __aeabi_memcpy          
+00200101  __aeabi_memcpy4         
+00200101  __aeabi_memcpy8         
+00200101  memcpy                  
+0020019d  __aeabi_memclr          
+0020019d  __aeabi_memclr4         
+0020019d  __aeabi_memclr8         
+0020019f  __aeabi_memset          
+0020019f  __aeabi_memset4         
+0020019f  __aeabi_memset8         
+002001a5  memset                  
+00200219  __TI_auto_init          
+002002f1  ResetISR                
+00200341  copy_in                 
+0020038d  C$$EXIT                 
+00200391  abort                   
+00200399  exit                    
+002003d1  _c_int00                
+0020040d  main                    
+00200441  _args_main              
+00200459  _register_unlock        
+0020045f  _register_lock          
+00200467  _nop                    
+0020046d  __TI_decompress_none    
+0020047b  digitalOutputToggle     
+00200487  __TI_decompress_rle24   
+0020048d  _system_pre_init        
+00200498  __TI_static_base__      
+002004a8  __TI_Handler_Table_Base 
+002004b0  __TI_CINIT_Base         
+002004b0  __TI_Handler_Table_Limit
+002004b8  __TI_CINIT_Limit        
+0027ffd4  __cca                   
+20004000  _lock                   
+20004004  _unlock                 
+20004008  __TI_cleanup_ptr        
+2000400c  __TI_dtors_ptr          
+20004010  main_func_sp            
+20007f00  __stack                 
+20008000  __STACK_END             
+20008000  __STACK_TOP             
+ffffffff  __binit__               
+ffffffff  __c_args__              
+ffffffff  binit                   
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+
+[48 symbols]

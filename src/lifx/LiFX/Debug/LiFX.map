@@ -1,0 +1,319 @@
+******************************************************************************
+                  TI ARM Linker PC v5.2.2                      
+******************************************************************************
+>> Linked Wed May 13 01:02:16 2015
+
+OUTPUT FILE NAME:   <LiFX.out>
+ENTRY POINT SYMBOL: "ResetISR"  address: 0020058d
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  FLASH                 00200000   0007ffd4  00000af6  0007f4de  R  X
+  FLASH_CCA             0027ffd4   0000000c  0000000c  00000000  R  X
+  SRAM_NON_RETENTION    20000000   00004000  00000000  00004000  RW X
+  SRAM_RETENTION        20004000   00004000  00000220  00003de0  RW X
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00200000    00200000    00000af8   00000af8    r-x
+  00200000    00200000    00000100   00000100    r-- .intvecs
+  00200100    00200100    000009b6   000009b6    r-x .text
+  00200ab8    00200ab8    00000040   00000040    r-- .cinit
+0027ffd4    0027ffd4    0000000c   0000000c    r--
+  0027ffd4    0027ffd4    0000000c   0000000c    r-- .flashcca
+20004000    20004000    00000120   00000000    rw-
+  20004000    20004000    00000100   00000000    rw- .vtable
+  20004100    20004100    00000020   00000000    rw- .data
+20007f00    20007f00    00000100   00000000    rw-
+  20007f00    20007f00    00000100   00000000    rw- .stack
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.intvecs   0    00200000    00000100     
+                  00200000    00000100     cx2538_startup_ccs.obj (.intvecs)
+
+.text      0    00200100    000009b6     
+                  00200100    000000cc     blinky.obj (.text:test)
+                  002001cc    000000ac     sys_ctrl.obj (.text:SysCtrlClockSet)
+                  00200278    000000a4     sys_ctrl.obj (.text:SysCtrlClockGet)
+                  0020031c    0000009c     rtsv7M3_T_le_eabi.lib : memcpy_t2.obj (.text)
+                  002003b8    00000082     blinky.obj (.text:test_VLC_freqs)
+                  0020043a    0000007a     rtsv7M3_T_le_eabi.lib : memset_t2.obj (.text)
+                  002004b4    0000006c                           : autoinit.obj (.text)
+                  00200520    0000006a                           : copy_decompress_rle.obj (.text)
+                  0020058a    00000002     cx2538_startup_ccs.obj (.text:FaultISR)
+                  0020058c    00000064     cx2538_startup_ccs.obj (.text:ResetISR)
+                  002005f0    0000005c     gpio.obj (.text:GPIODirModeSet)
+                  0020064c    0000005c     interrupt.obj (.text:IntRegister)
+                  002006a8    00000050     blinky.obj (.text:systick_setup)
+                  002006f8    0000004c     rtsv7M3_T_le_eabi.lib : cpy_tbl.obj (.text)
+                  00200744    00000044                           : exit.obj (.text)
+                  00200788    0000003e     blinky.obj (.text:delay_ms)
+                  002007c6    00000002     cx2538_startup_ccs.obj (.text:IntDefaultHandler)
+                  002007c8    0000003c     blinky.obj (.text:freqout_driver)
+                  00200804    0000003c     rtsv7M3_T_le_eabi.lib : boot.obj (.text)
+                  00200840    0000002e     blinky.obj (.text:freqout)
+                  0020086e    00000002     cx2538_startup_ccs.obj (.text:NmiSR)
+                  00200870    0000002c     sys_ctrl.obj (.text:SysCtrlIOClockSet)
+                  0020089c    00000024     lifx_bulb.obj (.text:led_toggle)
+                  002008c0    00000020     gpio.obj (.text:GPIOPinWrite)
+                  002008e0    00000020     lifx_bulb.obj (.text:led_off)
+                  00200900    00000020     lifx_bulb.obj (.text:lifx_bulb_setup)
+                  00200920    0000001c     systick.obj (.text:SysTickIntRegister)
+                  0020093c    0000001c     lifx_bulb.obj (.text:led_on)
+                  00200958    0000001c     blinky.obj (.text:main)
+                  00200974    00000018     gpio.obj (.text:GPIOPinRead)
+                  0020098c    00000018     systick.obj (.text:SysTickPeriodSet)
+                  002009a4    00000018     lifx_bulb.obj (.text:led_status)
+                  002009bc    00000018     rtsv7M3_T_le_eabi.lib : args_main.obj (.text)
+                  002009d4    00000014                           : _lock.obj (.text)
+                  002009e8    00000014     lifx_bulb.obj (.text:sw_read)
+                  002009fc    00000010     interrupt.obj (.text:IntAltMapEnable)
+                  00200a0c    00000010     interrupt.obj (.text:IntMasterEnable)
+                  00200a1c    00000010     systick.obj (.text:SysTickEnable)
+                  00200a2c    00000010     systick.obj (.text:SysTickIntDisable)
+                  00200a3c    00000010     systick.obj (.text:SysTickIntEnable)
+                  00200a4c    00000010     blinky.obj (.text:SysTickIntHandler)
+                  00200a5c    0000000e     rtsv7M3_T_le_eabi.lib : copy_decompress_none.obj (.text:decompress:none)
+                  00200a6a    0000000c     cpu.obj (.text:CPUcpsie)
+                  00200a76    00000002     --HOLE-- [fill = 0]
+                  00200a78    0000000c     systick.obj (.text:SysTickPeriodGet)
+                  00200a84    0000000c     rtsv7M3_T_le_eabi.lib : copy_zero_init.obj (.text:decompress:ZI)
+                  00200a90    0000000c     blinky.obj (.text:systick_get)
+                  00200a9c    0000000a     blinky.obj (.text:half_period_action)
+                  00200aa6    00000006     sys_ctrl.obj (.text:SysCtrlDelay)
+                  00200aac    00000006     rtsv7M3_T_le_eabi.lib : copy_decompress_rle.obj (.text:decompress:rle24)
+                  00200ab2    00000004                           : pre_init.obj (.text)
+
+.cinit     0    00200ab8    00000040     
+                  00200ab8    00000017     (.cinit..data.load) [load image, compression = rle]
+                  00200acf    00000001     --HOLE-- [fill = 0]
+                  00200ad0    0000000c     (__TI_handler_table)
+                  00200adc    00000004     --HOLE-- [fill = 0]
+                  00200ae0    00000008     (.cinit..vtable.load) [load image, compression = zero_init]
+                  00200ae8    00000010     (__TI_cinit_table)
+
+.init_array 
+*          0    00200000    00000000     UNINITIALIZED
+
+.flashcca 
+*          0    0027ffd4    0000000c     
+                  0027ffd4    0000000c     cx2538_setup.obj (.flashcca:retain)
+
+.vtable    0    20004000    00000100     UNINITIALIZED
+                  20004000    00000100     interrupt.obj (.vtable)
+
+.data      0    20004100    00000020     UNINITIALIZED
+                  20004100    0000000c     blinky.obj (.data)
+                  2000410c    00000008     rtsv7M3_T_le_eabi.lib : _lock.obj (.data)
+                  20004114    00000008                           : exit.obj (.data)
+                  2000411c    00000004                           : stkdepth_vars.obj (.data)
+
+.TI.persistent 
+*          0    20004100    00000000     UNINITIALIZED
+
+.stack     0    20007f00    00000100     UNINITIALIZED
+                  20007f00    00000100     --HOLE--
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00200ae8 records: 2, size/record: 8, table size: 16
+	.data: load addr=00200ab8, load size=00000017 bytes, run addr=20004100, run size=00000020 bytes, compression=rle
+	.vtable: load addr=00200ae0, load size=00000008 bytes, run addr=20004000, run size=00000100 bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00200ad0 records: 3, size/record: 4, table size: 12
+	index: 0, handler: __TI_zero_init
+	index: 1, handler: __TI_decompress_rle24
+	index: 2, handler: __TI_decompress_none
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                    
+-------   ----                    
+00200745  C$$EXIT                 
+00200a6b  CPUcpsie                
+002005f1  GPIODirModeSet          
+00200975  GPIOPinRead             
+002008c1  GPIOPinWrite            
+002009fd  IntAltMapEnable         
+00200a0d  IntMasterEnable         
+0020064d  IntRegister             
+0020058d  ResetISR                
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+00200279  SysCtrlClockGet         
+002001cd  SysCtrlClockSet         
+00200aa7  SysCtrlDelay            
+00200871  SysCtrlIOClockSet       
+00200a1d  SysTickEnable           
+00200a2d  SysTickIntDisable       
+00200a3d  SysTickIntEnable        
+00200a4d  SysTickIntHandler       
+00200921  SysTickIntRegister      
+00200a79  SysTickPeriodGet        
+0020098d  SysTickPeriodSet        
+20008000  __STACK_END             
+00000100  __STACK_SIZE            
+20008000  __STACK_TOP             
+00200ae8  __TI_CINIT_Base         
+00200af8  __TI_CINIT_Limit        
+00200ad0  __TI_Handler_Table_Base 
+00200adc  __TI_Handler_Table_Limit
+002004b5  __TI_auto_init          
+20004114  __TI_cleanup_ptr        
+00200a5d  __TI_decompress_none    
+00200aad  __TI_decompress_rle24   
+20004118  __TI_dtors_ptr          
+00200ab8  __TI_static_base__      
+00200a85  __TI_zero_init          
+0020043b  __aeabi_memclr          
+0020043b  __aeabi_memclr4         
+0020043b  __aeabi_memclr8         
+0020031d  __aeabi_memcpy          
+0020031d  __aeabi_memcpy4         
+0020031d  __aeabi_memcpy8         
+0020043d  __aeabi_memset          
+0020043d  __aeabi_memset4         
+0020043d  __aeabi_memset8         
+ffffffff  __binit__               
+ffffffff  __c_args__              
+0027ffd4  __cca                   
+20007f00  __stack                 
+002009bd  _args_main              
+00200805  _c_int00                
+2000410c  _lock                   
+002009e3  _nop                    
+002009db  _register_lock          
+002009d5  _register_unlock        
+00200ab3  _system_pre_init        
+20004110  _unlock                 
+00200749  abort                   
+ffffffff  binit                   
+002006f9  copy_in                 
+00200789  delay_ms                
+00200751  exit                    
+00200841  freqout                 
+002007c9  freqout_driver          
+20004000  g_pfnRAMVectors         
+00200000  g_pfnVectors            
+00200a9d  half_period_action      
+002008e1  led_off                 
+0020093d  led_on                  
+002009a5  led_status              
+0020089d  led_toggle              
+00200901  lifx_bulb_setup         
+00200959  main                    
+2000411c  main_func_sp            
+0020031d  memcpy                  
+00200443  memset                  
+002009e9  sw_read                 
+20004100  systick                 
+00200a91  systick_get             
+002006a9  systick_setup           
+00200101  test                    
+002003b9  test_VLC_freqs          
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                    
+-------   ----                    
+00000100  __STACK_SIZE            
+00200000  g_pfnVectors            
+00200101  test                    
+002001cd  SysCtrlClockSet         
+00200279  SysCtrlClockGet         
+0020031d  __aeabi_memcpy          
+0020031d  __aeabi_memcpy4         
+0020031d  __aeabi_memcpy8         
+0020031d  memcpy                  
+002003b9  test_VLC_freqs          
+0020043b  __aeabi_memclr          
+0020043b  __aeabi_memclr4         
+0020043b  __aeabi_memclr8         
+0020043d  __aeabi_memset          
+0020043d  __aeabi_memset4         
+0020043d  __aeabi_memset8         
+00200443  memset                  
+002004b5  __TI_auto_init          
+0020058d  ResetISR                
+002005f1  GPIODirModeSet          
+0020064d  IntRegister             
+002006a9  systick_setup           
+002006f9  copy_in                 
+00200745  C$$EXIT                 
+00200749  abort                   
+00200751  exit                    
+00200789  delay_ms                
+002007c9  freqout_driver          
+00200805  _c_int00                
+00200841  freqout                 
+00200871  SysCtrlIOClockSet       
+0020089d  led_toggle              
+002008c1  GPIOPinWrite            
+002008e1  led_off                 
+00200901  lifx_bulb_setup         
+00200921  SysTickIntRegister      
+0020093d  led_on                  
+00200959  main                    
+00200975  GPIOPinRead             
+0020098d  SysTickPeriodSet        
+002009a5  led_status              
+002009bd  _args_main              
+002009d5  _register_unlock        
+002009db  _register_lock          
+002009e3  _nop                    
+002009e9  sw_read                 
+002009fd  IntAltMapEnable         
+00200a0d  IntMasterEnable         
+00200a1d  SysTickEnable           
+00200a2d  SysTickIntDisable       
+00200a3d  SysTickIntEnable        
+00200a4d  SysTickIntHandler       
+00200a5d  __TI_decompress_none    
+00200a6b  CPUcpsie                
+00200a79  SysTickPeriodGet        
+00200a85  __TI_zero_init          
+00200a91  systick_get             
+00200a9d  half_period_action      
+00200aa7  SysCtrlDelay            
+00200aad  __TI_decompress_rle24   
+00200ab3  _system_pre_init        
+00200ab8  __TI_static_base__      
+00200ad0  __TI_Handler_Table_Base 
+00200adc  __TI_Handler_Table_Limit
+00200ae8  __TI_CINIT_Base         
+00200af8  __TI_CINIT_Limit        
+0027ffd4  __cca                   
+20004000  g_pfnRAMVectors         
+20004100  systick                 
+2000410c  _lock                   
+20004110  _unlock                 
+20004114  __TI_cleanup_ptr        
+20004118  __TI_dtors_ptr          
+2000411c  main_func_sp            
+20007f00  __stack                 
+20008000  __STACK_END             
+20008000  __STACK_TOP             
+ffffffff  __binit__               
+ffffffff  __c_args__              
+ffffffff  binit                   
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+
+[82 symbols]
