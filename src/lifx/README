@@ -1,7 +1,7 @@
 Place the LIFX directory in your Code Composer Studio's workspace directory and import.
 
-Full Disclosures:
+Full Disclosure:
 - I copied the LIFX directory out of my C:\Users\Craig\Documents\workspace_v6_1\LIFX directory on 05/13/2015.
-- I did not clean the building system to preserve any binaries in the event that this project does not
-   work as intended.
+- I did not clean the building system, as to preserve any binaries, in the event that this project does not
+   import as intended.
 - I forced git to add the object files and binaries even though they are gitignored.
